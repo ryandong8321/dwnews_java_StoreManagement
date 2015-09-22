@@ -1,9 +1,9 @@
 package com.dwnews.storemanagement.service;
 
 import java.io.Serializable;
-import com.dwnews.storemanagement.dao.StoreManagementBaseDAOImpl;
+import com.dwnews.storemanagement.dao.IStoreManagementBaseDAO;
 
-public abstract class StoreManagementBaseServiceImpl<T, PK extends Serializable, K extends StoreManagementBaseDAOImpl<T,PK>> implements IStoreManagementBaseService<T, PK> {
+public abstract class StoreManagementBaseServiceImpl<T, PK extends Serializable, K extends IStoreManagementBaseDAO<T,PK>> implements IStoreManagementBaseService<T, PK> {
 	
 	/**
 	 * 取得当前DAO

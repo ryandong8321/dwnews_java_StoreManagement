@@ -4,7 +4,7 @@
   <groupId>com.dwnews.storemanagement</groupId>
   <artifactId>dwnews_java_StoreManagement</artifactId>
   <packaging>war</packaging>
-  <version>1.-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <name>dwnews_java_StoreManagement Maven Webapp</name>
   <url>http://maven.apache.org</url>
   

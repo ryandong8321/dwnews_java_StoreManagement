@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation=" 
+           http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/mvc 
+           http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-3.2.xsd"
+	default-autowire="byName" default-lazy-init="false">
+
+	<!-- 约定优于配置，约定优于配置 -->
+	<!-- 扫描所有的controller -->
+	<context:component-scan base-package="com.dwnews.storemanagement" />
+	<context:annotation-config></context:annotation-config>
+
+	<aop:config proxy-target-class="true"></aop:config>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+
+	<mvc:annotation-driven />
+	<bean id="handlerAdapter"
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+			</list>
+		</property>
+	</bean>
+	<!-- InternalResourceViewResolver默认的就是JstlView所以这里就不用配置viewClass了 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+
+	<!-- 配置静态资源，直接映射到对应的文件夹，不被DispatcherServlet处理，3.24新增功能，需要重新设置spring-mvc-3.2.xsd -->
+	<mvc:resources mapping="/assets/**" location="/assets/" />
+
+	<!-- 拦截器配置 -->
+</beans> 

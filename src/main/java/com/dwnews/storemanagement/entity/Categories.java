@@ -34,7 +34,7 @@ public class Categories implements Serializable{
 	 * 上级类别编号
 	 */
 	@Column(name = "category_parent_id", nullable = false)
-	private String parentId;
+	private Integer parentId;
 	
 	/*
 	 * 备注
@@ -64,11 +64,11 @@ public class Categories implements Serializable{
 		this.categoryName = categoryName;
 	}
 
-	public String getParentId() {
+	public Integer getParentId() {
 		return parentId;
 	}
 
-	public void setParentId(String parentId) {
+	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
 	}
 
