@@ -12,6 +12,8 @@ public interface ICategoryManagementService extends IStoreManagementBaseService<
 	
 	public Map<String, Object> findCategories(Integer rowNum, Integer pageSize, Map<String, Object> parameters);
 	
-	public List<Map<String,Object>> findCategoryRank(Integer parentId, String ids);
+	public List<Map<String,Object>> findCategoryRank(Integer parentId, String ids, Integer notExistId);
+	
+	public String findCategoryParents(Integer categoryId, Integer parentId);
 	
 }

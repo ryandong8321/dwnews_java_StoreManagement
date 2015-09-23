@@ -95,7 +95,7 @@
 				<!-- BEGIN SIDEBAR MENU -->
 				<ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
 					<li class="start active ">
-						<a href="javascript:;"> 
+						<a href="<%=basePath%>categorymanagement/categorieslist.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 类别管理 </span> 
 							<span class="selected"></span>
@@ -181,12 +181,12 @@
 							</div>
 							<div class="portlet-body form">
 								<!-- BEGIN FORM-->
-								<form action="#" class="form-horizontal form-bordered">
+								<form action="<%=basePath%>categorymanagement/savecategory.do" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
 									<div class="form-body">
 										<div class="form-group">
 											<label class="control-label col-md-3">类别名称</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="类别名称" class="form-control" value="${category.categoryName }"/>
+												<input type="text" placeholder="类别名称" class="form-control" value="${category.categoryName }" id="categoryName" name="categoryName" />
 											</div>
 										</div>
 										<div class="form-group" id="div_parent">
@@ -208,6 +208,10 @@
 											</div>
 										</div>
 									</div>
+									<input type="hidden" id="categoryId" name="categoryId" value="${category.id }" />
+									<input type="hidden" id="categoryParentId" name="categoryParentId" value="${category.parentId }" />
+									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
+									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
 								</form>
 								<!-- END FORM-->
 							</div>
@@ -252,19 +256,61 @@
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
 	<script>
+		var pid,id;
 		jQuery(document).ready(function() {
 			// initiate layout and plugins
 			App.init();
-
-			var data = getRemoteData(-1);
+			
+			var data;
+			if ($("#operation_status").val()==1){
+				alert("Save category success!");
+				window.location.href="<%=basePath%>categorymanagement/categorieslist.do";
+			}else if ($("#operation_status").val()==0){
+				alert("Save category failed, please try again!");
+			}
+			
+			var parentIds=$("#parentIds").val();
+			if (parentIds==""){
+				data = getRemoteData(-1);
+			}else{
+				var m=new Array();
+				if (parentIds.indexOf(",")>0){
+					var tmp=parentIds.split(",");
+					alert("tmp-->"+tmp);
+					for (var i=0;i<tmp.length;i++){
+						m[i]=parseInt(tmp[i]);
+					}
+				}else{
+					m[0]=parseInt(parentIds);
+				}
+				
+				$.ajax({
+			        type: "POST",
+			        async:false,
+			        contentType: "application/json; charset=utf-8",
+			        url: "<%=basePath%>categorymanagement/getcategoryrank.do",
+			        data: "{'ids':'"+m+"' , 'parentId':'"+m[m.length-1]+"' , 'notExistId':'"+$("#categoryId").val()+"'}",
+			        dataType: 'json',
+			        success: function(result) {
+			        	data=result.data;
+			        }
+			    });
+				
+				id=m.join();
+				pid=m[m.length-1];			
+			}
+			
+			alert("m-->"+m);
 			var $sltCategory = $(".js-example-events");
 			$sltCategory.select2({
 				data:data
 			}); 
+			
+			$sltCategory.val(m).trigger("change");
 			$sltCategory.on("select2:select", function (e) { renewSelect($sltCategory,getRemoteData($sltCategory.val()));});
+			$sltCategory.on("select2:unselect", function (e) { unSelect($sltCategory);});
 		});
 		
-		var pid,id;
 		function getRemoteData(ids){
 			if (ids==-1){
 				id="";
@@ -275,14 +321,13 @@
 			}
 			pid=ids;
 			
-			alert("id="+id+"|||pid="+pid);
 			var retureValue;
 			$.ajax({
 		        type: "POST",
 		        async:false,
 		        contentType: "application/json; charset=utf-8",
 		        url: "<%=basePath%>categorymanagement/getcategoryrank.do",
-		        data: "{'ids':'"+id+"' , 'parentId':'"+pid+"'}",
+		        data: "{'ids':'"+id+"' , 'parentId':'"+pid+"' , 'notExistId':'"+$("#categoryId").val()+"'}",
 		        dataType: 'json',
 		        success: function(result) {
 		        	retureValue=result.data;
@@ -292,6 +337,7 @@
 		}
 		
 		function renewSelect(obj,data){
+			obj.select2("destroy");
 			$("#div_select").remove();
 			$("#div_parent").append('<div class="col-md-9" id="div_select"><select class="js-states js-example-events form-control" multiple="multiple" id="newSelect"></select></div>');
 			
@@ -312,6 +358,58 @@
 			
 			$sltCategory.val(m).trigger("change");
 			$sltCategory.on("select2:select", function (e) { renewSelect($sltCategory,getRemoteData($sltCategory.val()));});
+			$sltCategory.on("select2:unselect", function (e) { unSelect($sltCategory,e);});
+		}
+		
+		function unSelect(obj,evt){
+			// evt parameters-->"data":{"selected":false,"disabled":false,"text":"California","id":"CA",
+			//  "title":"","_resultId":"select2-m96d-result-ev93-CA","element":"[DOM node]"}
+			
+			var deleteId=evt.params.data.id;
+			var arrIds=id.split(",");
+			var arrNewIds=new Array();
+			var ind=0;
+			for (var i=0;i<arrIds.length;i++){
+				if (deleteId==arrIds[i]){
+					break;
+				}
+				arrNewIds[ind++]=arrIds[i];
+			}
+			
+			if(arrNewIds.length==0){
+				arrNewIds[0]=-1;
+			}
+			
+			var newData;
+			$.ajax({
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>categorymanagement/getcategoryrank.do",
+		        data: "{'ids':'"+arrNewIds+"' , 'parentId':'"+arrNewIds[arrNewIds.length-1]+"' , 'notExistId':'"+$("#categoryId").val()+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	newData=result.data;
+		        }
+		    });
+			
+			id=arrNewIds.join();
+			pid=arrNewIds[arrNewIds.length-1];
+			
+			renewSelect(obj,newData);
+		}
+		
+		function checkAllInfo(){
+			if (!$("#categoryName").val()){
+				alert("input categoryName");
+				return false;
+			}
+			
+			alert("pid-->"+pid);
+			$("#categoryParentId").val(pid);
+			alert("parentId-->"+$("#categoryParentId").val());
+			
+			return ture;
 		}
 	</script>
 	<!-- END JAVASCRIPTS -->

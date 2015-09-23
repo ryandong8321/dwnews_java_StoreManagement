@@ -2,7 +2,6 @@ package com.dwnews.storemanagement.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +70,60 @@ public class CategoryManagementController {
 			Categories category=categoryManagementService.get(categoryId);
 			logger.info("this is [showCategoryInfo.do] category ["+category+"] ...");
 			modelMap.addAttribute("category", category);
+			
+			String parentIds=categoryManagementService.findCategoryParents(category.getId(), category.getParentId());
+			logger.info("this is [showCategoryInfo.do] parentIds ["+parentIds+"] ...");
+			modelMap.addAttribute("parentIds",parentIds);
 		}
+		modelMap.addAttribute("categoryId", categoryId);
+		modelMap.addAttribute("operation_status", "-1");
+		return "/category/categoriesinfo";
+	}
+	
+	@RequestMapping(value = "/savecategory.do", method=RequestMethod.POST)
+	public String saveCategory(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+		logger.info("this is [saveCategory.do] start ...");
+		int categoryId=0,parentId=0;
+		String categoryName=null;
+		try{
+			categoryId=ServletRequestUtils.getIntParameter(request, "categoryId", 0);
+			parentId=ServletRequestUtils.getIntParameter(request, "categoryParentId", -1);
+			categoryName=ServletRequestUtils.getRequiredStringParameter(request, "categoryName");
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		logger.info("this is [saveCategory.do] categoryId ["+categoryId+"] ...");
+		logger.info("this is [saveCategory.do] parentId ["+parentId+"] ...");
+		logger.info("this is [saveCategory.do] categoryName ["+categoryName+"] ...");
+		
+		Categories category=null;
+		if (categoryId!=0){
+			logger.info("this is [saveCategory.do] find category by id ["+categoryId+"] ...");
+			category=categoryManagementService.get(categoryId);
+		}else{
+			logger.info("this is [saveCategory.do] create new category ...");
+			category=new Categories();
+		}
+		logger.info("this is [saveCategory.do] set attributes ...");
+		category.setCategoryName(categoryName);
+		category.setParentId(parentId);
+		
+		try{
+			logger.info("this is [saveCategory.do] is saving ...");
+			categoryManagementService.save(category);
+			logger.info("this is [saveCategory.do] save category done ...");
+			modelMap.addAttribute("category", category);
+			modelMap.addAttribute("operation_status", "1");
+		}catch(Exception ex){
+			logger.info("this is [saveCategory.do] save category error ...");
+			ex.printStackTrace();
+			modelMap.addAttribute("operation_status", "0");
+		}
+		
+		logger.info("this is [saveCategory.do] find parents ...");
+		String parentIds=categoryManagementService.findCategoryParents(category.getId(), category.getParentId());
+		logger.info("this is [saveCategory.do] parentIds ["+parentIds+"] ...");
+		
 		modelMap.addAttribute("categoryId", categoryId);
 		return "/category/categoriesinfo";
 	}
@@ -95,16 +147,20 @@ public class CategoryManagementController {
 					?"0":json.getString("parentId"));
 		String ids=json.getString("ids")==null||json.getString("ids").equals("")||json.getString("ids").equals("null")
 					?"-1":json.getString("ids");
+		Integer notExistId=Integer.parseInt(
+				json.getString("notExistId")==null||json.getString("notExistId").equals("")||json.getString("notExistId").equals("null")
+					?"0":json.getString("notExistId"));
 		
 		logger.info("this is [getCategoryRank.do] show parentId ["+parentId+"]");
 		logger.info("this is [getCategoryRank.do] show ids ["+ids+"]");
+		logger.info("this is [getCategoryRank.do] show notExistId ["+notExistId+"]");
 		
 		Map<String, Object> result=new HashMap<String, Object>();
 		if (parentId==0){
 			result.put("status", 0);
 			result.put("data", "wrong parameters");
 		}else{
-			List<Map<String, Object>> lst=categoryManagementService.findCategoryRank(parentId,ids);
+			List<Map<String, Object>> lst=categoryManagementService.findCategoryRank(parentId,ids,notExistId);
 			result.put("status", 1);
 			result.put("data", lst);
 		}
@@ -145,16 +201,16 @@ public class CategoryManagementController {
 		return parameters;
 	}
 	
-	@RequestMapping(value = "/savecategoryinfo.do",method=RequestMethod.POST)
+	@RequestMapping(value = "/deletecategory.do",method=RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> saveCategoryInfo(HttpServletRequest request,@RequestBody String data) {
-		logger.info("this is [saveCategoryInfo.do] start ...");
+	public Map<String, Object> deletecategory(HttpServletRequest request,@RequestBody String data) {
+		logger.info("this is [deletecategory.do] start ...");
 		if (data!=null&&!data.equals("")){
 			try {
-				logger.info("this is [saveCategoryInfo.do] is decoding ...");
+				logger.info("this is [deletecategory.do] is decoding ...");
 				data=URLDecoder.decode(data, "utf-8");
 			} catch (UnsupportedEncodingException e) {
-				logger.info("this is [saveCategoryInfo.do] occur error when program decoding ...");
+				logger.info("this is [deletecategory.do] occur error when program decoding ...");
 				e.printStackTrace();
 			}
 		}
@@ -163,25 +219,22 @@ public class CategoryManagementController {
 		Integer id=Integer.parseInt(
 			json.getString("id")==null||json.getString("id").equals("")||json.getString("id").equals("null")
 				?"-1":json.getString("id"));
-		String categoryName=json.getString("categoryName");
-		logger.info("this is [saveCategoryInfo.do] show id ["+id+"] category-name ["+categoryName+"]");
+		logger.info("this is [deletecategory.do] show id ["+id+"]");
 		
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		Categories category=new Categories();
-		if (id!=-1){
-			category.setId(id);
-		}
-		category.setCategoryName(categoryName);
 		try{
-			categoryManagementService.save(category);
+			logger.info("this is [deletecategory.do] is deleting ...");
+			categoryManagementService.delete(id);
 			parameters.put("status", 1);
 		}catch(Exception ex){
+			logger.info("this is [deletecategory.do] delete error ...");
 			ex.printStackTrace();
 			parameters.put("status", 0);
 		}
 		
-		logger.info("this is [saveCategoryInfo.do] end ...");
+		logger.info("this is [deletecategory.do] end ...");
 		return parameters;
 	}
+	
 
 }

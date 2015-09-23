@@ -102,7 +102,7 @@
 				<!-- BEGIN SIDEBAR MENU -->
 				<ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
 					<li class="start active ">
-						<a href="javascript:;"> 
+						<a href="<%=basePath%>categorymanagement/categorieslist.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 类别管理 </span> 
 							<span class="selected"></span>
@@ -254,10 +254,22 @@
 			}else if (options.length>1){
 				alert("select too more");
 			}else{
-				alert(options[0].id);
 				$("#categoryId").val(options[0].id);
-				alert($("#categoryId").val());
 				$("#frmShowCategory").submit();
+			}
+		}
+		
+		function deleteNewCategory(){
+			var $table = $('#table');
+			var options=$table.bootstrapTable('getSelections');
+			if (options.length<=0){
+				alert("no selection");
+			}else{			
+				var arr=new Array();
+				$(options).each(function(){
+					arr.push(this.id);
+				});
+				alert(arr);
 			}
 		}
 	</script>
