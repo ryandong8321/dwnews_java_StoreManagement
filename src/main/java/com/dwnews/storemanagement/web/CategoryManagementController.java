@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dwnews.storemanagement.entity.Categories;
 import com.dwnews.storemanagement.service.category.ICategoryManagementService;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Controller
@@ -39,6 +40,24 @@ public class CategoryManagementController {
 		logger.info("this is [categoriesList.do] start ...");
 		logger.info("this is [categoriesList.do] end ...");
 		return "category/categorieslist";
+	}
+	
+	@RequestMapping(value = "/categoriestree.do")
+	public String categoriesTree(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+		logger.info("this is [categoriesTree.do] start ...");
+		logger.info("this is [categoriesTree.do] end ...");
+		return "category/categoriestree";
+	}
+	
+	@RequestMapping(value = "/inittreedata.do")
+	@ResponseBody
+	public String initTreeData(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+		logger.info("this is [initTreeData.do] start ...");
+		List<Map<String, Object>> data=categoryManagementService.findCategoriesForTree(null);
+		String strJsonResult = JSONArray.fromObject(data).toString();
+		logger.info("this is [initTreeData.do] json [" + strJsonResult + "]");
+		logger.info("this is [initTreeData.do] end ...");
+		return strJsonResult;
 	}
 
 	@RequestMapping(value = "/inittable.do")
@@ -81,51 +100,78 @@ public class CategoryManagementController {
 	}
 	
 	@RequestMapping(value = "/savecategory.do", method=RequestMethod.POST)
-	public String saveCategory(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+	@ResponseBody
+	public Map<String, Object> saveCategory(HttpServletRequest request, @RequestBody String data) {
 		logger.info("this is [saveCategory.do] start ...");
-		int categoryId=0,parentId=0;
+		Integer categoryId=0,parentId=0;
 		String categoryName=null;
-		try{
-			categoryId=ServletRequestUtils.getIntParameter(request, "categoryId", 0);
-			parentId=ServletRequestUtils.getIntParameter(request, "categoryParentId", -1);
-			categoryName=ServletRequestUtils.getRequiredStringParameter(request, "categoryName");
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
-		logger.info("this is [saveCategory.do] categoryId ["+categoryId+"] ...");
-		logger.info("this is [saveCategory.do] parentId ["+parentId+"] ...");
-		logger.info("this is [saveCategory.do] categoryName ["+categoryName+"] ...");
+		Map<String, Object> result=new HashMap<String, Object>();
 		
-		Categories category=null;
-		if (categoryId!=0){
-			logger.info("this is [saveCategory.do] find category by id ["+categoryId+"] ...");
-			category=categoryManagementService.get(categoryId);
-		}else{
-			logger.info("this is [saveCategory.do] create new category ...");
-			category=new Categories();
+		if (data!=null&&!data.equals("")){
+			try {
+				logger.info("this is [saveCategory.do] is decoding ...");
+				data=URLDecoder.decode(data, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				logger.info("this is [saveCategory.do] occur error when program decoding ...");
+				e.printStackTrace();
+			}
 		}
-		logger.info("this is [saveCategory.do] set attributes ...");
-		category.setCategoryName(categoryName);
-		category.setParentId(parentId);
 		
 		try{
-			logger.info("this is [saveCategory.do] is saving ...");
-			categoryManagementService.save(category);
-			logger.info("this is [saveCategory.do] save category done ...");
-			modelMap.addAttribute("category", category);
-			modelMap.addAttribute("operation_status", "1");
+			JSONObject json=JSONObject.fromString(data);
+			parentId=Integer.parseInt(
+					json.getString("parentId")==null||json.getString("parentId").equals("")||json.getString("parentId").equals("null")
+						?"-1":json.getString("parentId"));
+			categoryId=Integer.parseInt(
+					json.getString("categoryId")==null||json.getString("categoryId").equals("")||json.getString("categoryId").equals("null")
+						?"0":json.getString("categoryId"));
+			categoryName=json.getString("categoryName")==null||json.getString("categoryName").equals("")||json.getString("categoryName").equals("null")
+					?"":json.getString("categoryName");
 		}catch(Exception ex){
-			logger.info("this is [saveCategory.do] save category error ...");
+			logger.info("this is [saveCategory.do] get parameter error ...");
+			result.put("status", -1);
+			result.put("data", "parameters error");
 			ex.printStackTrace();
-			modelMap.addAttribute("operation_status", "0");
 		}
 		
-		logger.info("this is [saveCategory.do] find parents ...");
-		String parentIds=categoryManagementService.findCategoryParents(category.getId(), category.getParentId());
-		logger.info("this is [saveCategory.do] parentIds ["+parentIds+"] ...");
+		if (result.isEmpty()){
+			logger.info("this is [saveCategory.do] categoryId ["+categoryId+"] ...");
+			logger.info("this is [saveCategory.do] parentId ["+parentId+"] ...");
+			logger.info("this is [saveCategory.do] categoryName ["+categoryName+"] ...");
+			
+			Categories category=null;
+			if (categoryId!=0){
+				logger.info("this is [saveCategory.do] find category by id ["+categoryId+"] ...");
+				category=categoryManagementService.get(categoryId);
+			}else{
+				logger.info("this is [saveCategory.do] create new category ...");
+				category=new Categories();
+			}
+			logger.info("this is [saveCategory.do] set attributes ...");
+			category.setCategoryName(categoryName);
+			category.setParentId(parentId);
+			
+			try{
+				logger.info("this is [saveCategory.do] is saving ...");
+				categoryManagementService.save(category);
+				logger.info("this is [saveCategory.do] save category done ...");
+				result.put("status", 1);
+				result.put("data", "save success!");
+			}catch(Exception ex){
+				logger.info("this is [saveCategory.do] save category error ...");
+				result.put("status", 1);
+				result.put("data", "save failed, try again!");
+				ex.printStackTrace();
+			}
+		}
 		
-		modelMap.addAttribute("categoryId", categoryId);
-		return "/category/categoriesinfo";
+//		logger.info("this is [saveCategory.do] find parents ...");
+//		String parentIds=categoryManagementService.findCategoryParents(category.getId(), category.getParentId());
+//		logger.info("this is [saveCategory.do] parentIds ["+parentIds+"] ...");
+		
+//		modelMap.addAttribute("categoryId", categoryId);
+		logger.info("this is [saveCategory.do] show result ["+result+"] ...");
+		return result;
 	}
 	
 	@RequestMapping(value = "/getcategoryrank.do",method=RequestMethod.POST)

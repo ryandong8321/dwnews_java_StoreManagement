@@ -16,4 +16,6 @@ public interface ICategoryManagementService extends IStoreManagementBaseService<
 	
 	public String findCategoryParents(Integer categoryId, Integer parentId);
 	
+	public List<Map<String,Object>> findCategoriesForTree(Map<String, Object> parameters);
+	
 }

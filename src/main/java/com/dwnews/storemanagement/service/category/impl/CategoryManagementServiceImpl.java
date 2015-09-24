@@ -178,4 +178,36 @@ public class CategoryManagementServiceImpl
 		parents+=category.getId();
 		return parents;
 	}
+
+	@Override
+	public List<Map<String, Object>> findCategoriesForTree(Map<String, Object> parameters) {
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		Object[] param = null;
+		StringBuffer hql = new StringBuffer("From Categories ca where 1=1");
+		if (parameters != null && !parameters.isEmpty()) {
+			param = new Object[parameters.size()];
+			int ind = 0;
+			for (String key : parameters.keySet()) {
+				hql.append(" and ");
+				hql.append(key);
+				hql.append(" = ?");
+				param[ind++] = parameters.get(key);
+			}
+		}
+		
+		hql.append(" order by parentId");
+		
+		List<Categories> lst = this.getCurrentDAO().find(hql.toString(), param);
+		if (lst != null && !lst.isEmpty()) {
+			Map<String, Object> map = null;
+			for (Categories category : lst) {
+				map = new HashMap<String, Object>();
+				map.put("id", category.getId());
+				map.put("text", category.getCategoryName());
+				map.put("parent", category.getParentId()==-1?"#":category.getParentId());
+				result.add(map);
+			}
+		}
+		return result;
+	}
 }

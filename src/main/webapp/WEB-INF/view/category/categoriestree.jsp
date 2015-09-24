@@ -24,25 +24,16 @@
 <link href="<%=basePath%>assets/metronic/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
 <!-- END GLOBAL MANDATORY STYLES -->
 <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
-<link href="<%=basePath%>assets/metronic/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" type="text/css"/>
-<link href="<%=basePath%>assets/metronic/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css"/>
-<link href="<%=basePath%>assets/metronic/plugins/fullcalendar/fullcalendar/fullcalendar.css" rel="stylesheet" type="text/css"/>
-<link href="<%=basePath%>assets/metronic/plugins/jqvmap/jqvmap/jqvmap.css" rel="stylesheet" type="text/css"/>
-<link href="<%=basePath%>assets/metronic/plugins/jquery-easy-pie-chart/jquery.easy-pie-chart.css" rel="stylesheet" type="text/css"/>
+<link href="<%=basePath%>assets/jstree/dist/themes/default/style.min.css" rel="stylesheet" type="text/css"/>
 <!-- END PAGE LEVEL PLUGIN STYLES -->
 <!-- BEGIN THEME STYLES -->
 <link href="<%=basePath%>assets/metronic/css/style-metronic.css" rel="stylesheet" type="text/css" />
 <link href="<%=basePath%>assets/metronic/css/style.css" rel="stylesheet" type="text/css" />
 <link href="<%=basePath%>assets/metronic/css/style-responsive.css" rel="stylesheet" type="text/css" />
 <link href="<%=basePath%>assets/metronic/css/plugins.css" rel="stylesheet" type="text/css" />
-<link href="<%=basePath%>assets/metronic/css/pages/tasks.css" rel="stylesheet" type="text/css"/>
 <link href="<%=basePath%>assets/metronic/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
-<link href="<%=basePath%>assets/metronic/css/print.css" rel="stylesheet" type="text/css" media="print"/>
 <link href="<%=basePath%>assets/metronic/css/custom.css" rel="stylesheet" type="text/css" />
 <!-- END THEME STYLES -->
-<!-- BEGIN BOOTSTRAP TABLE -->
-<link rel="stylesheet" type="text/css" href="<%=basePath%>assets/bootstrap_table/bootstrap-table.css" />
-<!-- END BOOTSTRAP TABLE -->
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <!-- END HEAD -->
@@ -164,9 +155,9 @@
 									<span> 操作 </span> <i class="fa fa-angle-down"></i>
 								</button>
 								<ul class="dropdown-menu pull-right" role="menu">
-									<li><a href="javascript:$('#frmShowCategory').submit()"> 新建类别 </a></li>
-									<li><a href="javascript:modifyNewCategory()"> 修改类别 </a></li>
-									<li><a href="javascript:deleteNewCategory()"> 删除类别 </a></li>
+									<li><a href="javascript:createCategory()"> 新建类别 </a></li>
+									<li><a href="javascript:modifyCategory()"> 修改类别 </a></li>
+									<li><a href="javascript:deleteCategory()"> 删除类别 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -184,22 +175,65 @@
 				</div>
 				<!-- END PAGE HEADER-->
 				<!-- BEGIN PAGE CONTENT-->
-				<div class="row ">
-					<div class="col-md-12">
-						<!-- BEGIN TABLE DATA-->
-						<table id="table" data-toggle="table" data-height="460" data-side-pagination="server"
-							data-pagination="true"
-							data-url="<%=basePath%>categorymanagement/inittable.do">
-							<thead>
-								<tr>
-									<th data-field="state" data-checkbox="true"></th>
-									<th data-field="id">编号</th>
-									<th data-field="categoryName">类别名称</th>
-								</tr>
-							</thead>
-						</table>
-						<!-- END TABLE DATA-->
+				<div class="row">
+					<div class="col-md-6">
+						<div class="portlet blue box">
+							<div class="portlet-title">
+								<div class="caption">
+									<i class="fa fa-cogs"></i>Default Tree
+								</div>
+							</div>
+							<div class="portlet-body">
+								<div id="using_json_1" class="tree-demo">
+								</div>
+							</div>
+						</div>
 					</div>
+					<div class="col-md-6">
+					<div class="portlet green box">
+						<div class="portlet-title">
+							<div class="caption">
+								<i class="fa fa-cogs"></i>Checkable Tree
+							</div>
+						</div>
+						<div class="portlet-body">
+							<div class="portlet-body form">
+								<!-- BEGIN FORM-->
+								<form action="" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
+									<div class="form-body">
+										<div class="form-group">
+											<label class="control-label col-md-3">上级类别</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="上级类别" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">类别名称</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="类别名称" class="form-control" value="" id="categoryName" name="categoryName" readonly="readonly"/>
+											</div>
+										</div>
+									</div>
+									<div class="form-actions fluid">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="col-md-offset-3 col-md-9">
+													<button type="button" class="btn green" onclick="saveCategory()">Submit</button>
+													<button type="button" class="btn default">Cancel</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									<input type="hidden" id="categoryId" name="categoryId" value="${category.id }" />
+									<input type="hidden" id="categoryParentId" name="categoryParentId" value="${category.parentId }" />
+									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
+									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
+								</form>
+								<!-- END FORM-->
+							</div>
+						</div>
+					</div>
+				</div>
 				</div>
 				<!-- END PAGE CONTENT-->
 			</div>
@@ -235,42 +269,157 @@
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/scripts/custom/ui-alert-dialog-api.js"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/jstree/dist/jstree.min.js"></script>
 	<!-- END ALERT BOX -->
-	<!-- BEGIN BOOTSTRAP TABLE -->
-	<script type="text/javascript" src="<%=basePath%>assets/bootstrap_table/bootstrap-table.js"></script>
-	<!-- END BOOTSTRAP TABLE -->
 	<script>
 		jQuery(document).ready(function() {
 			// initiate layout and plugins
 			App.init();
-
+			
+			$(function () {
+				$('#using_json_1').jstree({ 
+					'core' : {
+						"multiple" : false,
+					    'data' : {
+							contentType: "application/json; charset=utf-8",
+					        url: "<%=basePath%>categorymanagement/inittreedata.do",
+					        dataType: 'json'
+					    }
+					},
+					"checkbox" : {
+						"keep_selected_style" : true,
+						"three_state":false,
+						"whole_node":false,
+						"tie_selection":false,
+						"cascade":"down+undetermined"
+				    },
+					"types" : {
+		                "default" : {
+		                    "icon" : "fa fa-folder icon-warning icon-lg"
+		                },
+		                "file" : {
+		                    "icon" : "fa fa-file icon-warning icon-lg"
+		                }
+		            },
+		            "plugins": ["types","checkbox"]
+				});
+			});
+			
+			$('#using_json_1').on("changed.jstree", function (e, data) {
+			  	/* alert(data.selected);
+				var i, j, r = [];
+			    for(i = 0, j = data.selected.length; i < j; i++) {
+			      r.push(data.instance.get_node(data.selected[i]).text);
+			    }
+			    alert(r); */
+			    $("#parentName").val($('#using_json_1').jstree(true).get_node(data.instance.get_parent(data.selected)).text);
+			    $("#categoryName").val(data.instance.get_node(data.selected).text);
+			    $("#categoryId").val(data.selected);
+			    $("#categoryParentId").val(data.instance.get_parent(data.selected));
+			});
 		});
 		
-		function modifyNewCategory(){
-			var $table = $('#table');
-			var options=$table.bootstrapTable('getSelections');
-			if (options.length<=0){
-				alert("no selection");
-			}else if (options.length>1){
-				alert("select too more");
+		function refreshTree(node){
+			if (node){
+				$('#using_json_1').jstree(true).load_node(node);
 			}else{
-				$("#categoryId").val(options[0].id);
-				$("#frmShowCategory").submit();
+				$('#using_json_1').jstree(true).refresh();
 			}
 		}
 		
-		function deleteNewCategory(){
-			var $table = $('#table');
-			var options=$table.bootstrapTable('getSelections');
-			if (options.length<=0){
-				alert("no selection");
-			}else{			
-				var arr=new Array();
-				$(options).each(function(){
-					arr.push(this.id);
-				});
-				alert(arr);
+		function createCategory(){
+			$("#categoryName").attr('readonly', false);
+			
+			var ref=$('#using_json_1').jstree(true),selection=ref.get_selected();
+			
+			$("#parentName").val(ref.get_node(selection).text);
+		    $("#categoryName").val("");
+		    $("#categoryId").val(null);
+		    $("#categoryParentId").val(selection);
+		}
+
+		function modifyCategory() {
+			$("#categoryName").attr('readonly', false);
+		}
+
+		var arrIds=[];
+		function findAllTreeNode(nodeId){
+			/* var ref=$('#using_json_1').jstree(true);
+			if (!ref.is_leaf(nodeId)){
+				alert(ref.get_children_dom(nodeId));
+				arrIds.push(findAllTreeNode(ref.get_children_dom(nodeId).id));
 			}
+			arrIds.push(nodeId);
+			return nodeId; */
+			
+			var ref=$('#using_json_1').jstree(true);
+			if (!ref.is_leaf(nodeId)){
+				ref.get_children_dom(nodeId).each(function(){
+					alert($(this));
+				});
+			}
+		}
+		
+		function deleteCategory() {
+			var ref=$('#using_json_1').jstree(true);
+			alert(ref.get_checked());
+		}
+
+		function saveCategory() {
+			var flag = true, id, parentid, categoryName;
+
+			if (!$("#categoryName").val()) {
+				constractAlertMessage("input category NAME please!");
+				flag = false;
+			}
+
+			if (!flag) {
+				showMessage();
+				return;
+			}
+
+			saveCategoryInfo();
+		}
+		
+		function saveCategoryInfo(){
+			var id, parentid, categoryName;
+			
+			id = $("#categoryId").val();
+			parentId = $("#categoryParentId").val();
+			categoryName = $("#categoryName").val();
+
+			$.ajax({
+				type : "POST",
+				async : false,
+				contentType : "application/json; charset=utf-8",
+				url : "<%=basePath%>categorymanagement/savecategory.do",
+		        data: "{'categoryId':'"+id+"' , 'parentId':'"+parentId+"' , 'categoryName':'"+categoryName+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	if (result.status==1){
+		   			 	$("#categoryName").attr('readonly',true);
+		   			 	refreshTree();
+		        	}
+		        	showMessage(result.data);
+		        }
+		    });
+		}
+		
+		var message;
+		function constractAlertMessage(msg){
+			if (!message){
+				message=msg;
+			}else{
+				message+="<br/>"+msg;
+			}
+		}
+		
+		
+		function showMessage(msg){
+			if (msg){
+				message=msg;
+			}
+			alert(message);
 		}
 	</script>
 	<!-- END JAVASCRIPTS -->
