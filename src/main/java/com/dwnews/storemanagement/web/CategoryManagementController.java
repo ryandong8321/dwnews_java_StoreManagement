@@ -262,25 +262,25 @@ public class CategoryManagementController {
 		}
 		
 		JSONObject json=JSONObject.fromString(data);
-		Integer id=Integer.parseInt(
-			json.getString("id")==null||json.getString("id").equals("")||json.getString("id").equals("null")
-				?"-1":json.getString("id"));
-		logger.info("this is [deletecategory.do] show id ["+id+"]");
+		String ids=json.getString("categoryIds")==null||json.getString("categoryIds").equals("")||json.getString("categoryIds").equals("null")
+				?"-1":json.getString("categoryIds");
+		logger.info("this is [deletecategory.do] show categoryIds ["+ids+"]");
 		
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		try{
+			
 			logger.info("this is [deletecategory.do] is deleting ...");
-			categoryManagementService.delete(id);
+			categoryManagementService.deleteCategories(ids);
 			parameters.put("status", 1);
+			parameters.put("data", "operation success.");
 		}catch(Exception ex){
 			logger.info("this is [deletecategory.do] delete error ...");
 			ex.printStackTrace();
 			parameters.put("status", 0);
+			parameters.put("data", "operation failed, try again please.");
 		}
 		
 		logger.info("this is [deletecategory.do] end ...");
 		return parameters;
 	}
-	
-
 }

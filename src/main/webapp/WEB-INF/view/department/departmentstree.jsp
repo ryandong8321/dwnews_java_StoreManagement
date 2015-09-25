@@ -92,19 +92,19 @@
 			<div class="page-sidebar navbar-collapse collapse">
 				<!-- BEGIN SIDEBAR MENU -->
 				<ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
-					<li class="start active ">
+					<li class="">
 						<a href="<%=basePath%>categorymanagement/categoriestree.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 类别管理 </span> 
 							<span class="selected"></span>
-							<span class="arrow open"></span>
+							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="">
+					<li class="start active ">
 						<a href="<%=basePath%>departmentmanagement/departmentstree.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 部门管理 </span> 
-							<span class="arrow "></span>
+							<span class="arrow open "></span>
 						</a>
 					</li>
 					<li class="">
@@ -145,7 +145,7 @@
 					<div class="col-md-12">
 						<!-- BEGIN PAGE TITLE & BREADCRUMB-->
 						<h3 class="page-title">
-							类别管理
+							部门管理
 						</h3>
 						<ul class="page-breadcrumb breadcrumb">
 							<li class="btn-group">
@@ -155,9 +155,9 @@
 									<span> 操作 </span> <i class="fa fa-angle-down"></i>
 								</button>
 								<ul class="dropdown-menu pull-right" role="menu">
-									<li><a href="javascript:createCategory()"> 新建类别 </a></li>
-									<li><a href="javascript:modifyCategory()"> 修改类别 </a></li>
-									<li><a href="javascript:deleteCategory()"> 删除类别 </a></li>
+									<li><a href="javascript:createDepartment()"> 新建部门 </a></li>
+									<li><a href="javascript:modifyDepartment()"> 修改部门 </a></li>
+									<li><a href="javascript:deleteDepartment()"> 删除部门 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -166,7 +166,7 @@
 								<i class="fa fa-angle-right"></i>
 							</li>
 							<li>
-								<a href="#">类别管理</a>
+								<a href="#">部门管理</a>
 								<i class="fa fa-angle-right"></i>
 							</li>
 						</ul>
@@ -180,7 +180,7 @@
 						<div class="portlet blue box">
 							<div class="portlet-title">
 								<div class="caption">
-									<i class="fa fa-cogs"></i>产品类别
+									<i class="fa fa-cogs"></i>公司部门
 								</div>
 							</div>
 							<div class="portlet-body">
@@ -193,7 +193,7 @@
 					<div class="portlet green box">
 						<div class="portlet-title">
 							<div class="caption">
-								<i class="fa fa-cogs"></i>类别信息
+								<i class="fa fa-cogs"></i>部门信息
 							</div>
 						</div>
 						<div class="portlet-body">
@@ -202,15 +202,15 @@
 								<form action="" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
 									<div class="form-body">
 										<div class="form-group">
-											<label class="control-label col-md-3">上级类别</label>
+											<label class="control-label col-md-3">上级部门</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="上级类别" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
+												<input type="text" placeholder="上级部门" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-md-3">类别名称</label>
+											<label class="control-label col-md-3">部门名称</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="类别名称" class="form-control" value="" id="categoryName" name="categoryName" readonly="readonly"/>
+												<input type="text" placeholder="部门名称" class="form-control" value="" id="departmentName" name="departmentName" readonly="readonly"/>
 											</div>
 										</div>
 									</div>
@@ -218,14 +218,14 @@
 										<div class="row">
 											<div class="col-md-12">
 												<div class="col-md-offset-3 col-md-9">
-													<button type="button" class="btn green" onclick="saveCategory()">Submit</button>
+													<button type="button" class="btn green" onclick="saveDepartment()">Submit</button>
 													<button type="button" class="btn default">Cancel</button>
 												</div>
 											</div>
 										</div>
 									</div>
-									<input type="hidden" id="categoryId" name="categoryId" value="${category.id }" />
-									<input type="hidden" id="categoryParentId" name="categoryParentId" value="${category.parentId }" />
+									<input type="hidden" id="departmentId" name="departmentId" value="${department.id }" />
+									<input type="hidden" id="departmentParentId" name="departmentParentId" value="${department.parentId }" />
 									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
 									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
 								</form>
@@ -237,8 +237,8 @@
 				</div>
 				<!-- END PAGE CONTENT-->
 			</div>
-			<form action="<%=basePath%>categorymanagement/showcategory.do" id="frmShowCategory" method="POST">
-				<input type="hidden" id="categoryId" name="categoryId" />
+			<form action="" id="frmShowDepartment" method="POST">
+				<input type="hidden" id="departmentId" name="departmentId" />
 			</form>
 		</div>
 		<!-- END CONTENT -->
@@ -282,7 +282,7 @@
 						"multiple" : false,
 					    'data' : {
 							contentType: "application/json; charset=utf-8",
-					        url: "<%=basePath%>categorymanagement/inittreedata.do",
+					        url: "<%=basePath%>departmentmanagement/inittreedata.do",
 					        dataType: 'json'
 					    }
 					},
@@ -314,9 +314,9 @@
 			    }
 			    alert(r); */
 			    $("#parentName").val($('#using_json_1').jstree(true).get_node(data.instance.get_parent(data.selected)).text);
-			    $("#categoryName").val(data.instance.get_node(data.selected).text);
-			    $("#categoryId").val(data.selected);
-			    $("#categoryParentId").val(data.instance.get_parent(data.selected));
+			    $("#departmentName").val(data.instance.get_node(data.selected).text);
+			    $("#departmentId").val(data.selected);
+			    $("#departmentParentId").val(data.instance.get_parent(data.selected));
 			});
 		});
 		
@@ -340,30 +340,30 @@
 			return treeInstance;
 		}
 		
-		//create category button action
-		function createCategory(){
-			$("#categoryName").attr('readonly', false);
+		//create department button action
+		function createDepartment(){
+			$("#departmentName").attr('readonly', false);
 			
 			var ref=getInstanceOfTree(),selection=ref.get_selected();
 			
 			$("#parentName").val(ref.get_node(selection).text);
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(selection);
+		    $("#departmentName").val("");
+		    $("#departmentId").val(null);
+		    $("#departmentParentId").val(selection);
 		}
 
-		//modify category button action
-		function modifyCategory() {
+		//modify department button action
+		function modifyDepartment() {
 			var ref=getInstanceOfTree();
 			if (!ref.get_selected()){
 				showMessage("Hitting text to select option that you want to modify.");
 				return;
 			}
-			$("#categoryName").attr('readonly', false);
+			$("#departmentName").attr('readonly', false);
 		}
 		
-		//delete category button action
-		function deleteCategory() {
+		//delete department button action
+		function deleteDepartment() {
 			var ref=getInstanceOfTree();
 			if(!ref.get_checked()){
 				showMessage("check option you want to delete.");
@@ -375,8 +375,8 @@
 						type : "POST",
 						async : false,
 						contentType : "application/json; charset=utf-8",
-						url : "<%=basePath%>categorymanagement/deletecategory.do",
-				        data: "{'categoryIds':'"+ref.get_checked()+"'}",
+						url : "<%=basePath%>departmentmanagement/deletedepartment.do",
+				        data: "{'departmentIds':'"+ref.get_checked()+"'}",
 				        dataType: 'json',
 				        success: function(result) {
 				        	if (result.status==1){
@@ -392,17 +392,17 @@
 		
 		function cleanAllFields(){
 			$("#parentName").val("");
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(null);
+		    $("#departmentName").val("");
+		    $("#departmentId").val(null);
+		    $("#departmentParentId").val(null);
 		}
 
 		//check field and do save action
-		function saveCategory() {
-			var flag = true, id, parentid, categoryName;
+		function saveDepartment() {
+			var flag = true, id, parentid, departmentName;
 
-			if (!$("#categoryName").val()) {
-				constractAlertMessage("Input category NAME please!");
+			if (!$("#departmentName").val()) {
+				constractAlertMessage("Input department NAME please!");
 				flag = false;
 			}
 
@@ -411,27 +411,27 @@
 				return;
 			}
 
-			saveCategoryInfo();
+			saveDepartmentInfo();
 		}
 		
-		//save category information
-		function saveCategoryInfo(){
-			var id, parentid, categoryName;
+		//save department information
+		function saveDepartmentInfo(){
+			var id, parentid, departmentName;
 			
-			id = $("#categoryId").val();
-			parentId = $("#categoryParentId").val();
-			categoryName = $("#categoryName").val();
+			id = $("#departmentId").val();
+			parentId = $("#departmentParentId").val();
+			departmentName = $("#departmentName").val();
 
 			$.ajax({
 				type : "POST",
 				async : false,
 				contentType : "application/json; charset=utf-8",
-				url : "<%=basePath%>categorymanagement/savecategory.do",
-		        data: "{'categoryId':'"+id+"' , 'parentId':'"+parentId+"' , 'categoryName':'"+categoryName+"'}",
+				url : "<%=basePath%>departmentmanagement/savedepartment.do",
+		        data: "{'departmentId':'"+id+"' , 'parentId':'"+parentId+"' , 'departmentName':'"+departmentName+"'}",
 		        dataType: 'json',
 		        success: function(result) {
 		        	if (result.status==1){
-		   			 	$("#categoryName").attr('readonly',true);
+		   			 	$("#departmentName").attr('readonly',true);
 		   			 	refreshTree();
 		   			 	openTreeNode();
 		        	}

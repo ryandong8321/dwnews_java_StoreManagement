@@ -195,7 +195,7 @@ public class CategoryManagementServiceImpl
 			}
 		}
 		
-		hql.append(" order by parentId");
+		hql.append(" order by parentId , id");
 		
 		List<Categories> lst = this.getCurrentDAO().find(hql.toString(), param);
 		if (lst != null && !lst.isEmpty()) {
@@ -205,9 +205,40 @@ public class CategoryManagementServiceImpl
 				map.put("id", category.getId());
 				map.put("text", category.getCategoryName());
 				map.put("parent", category.getParentId()==-1?"#":category.getParentId());
+				if (category.getParentId()==-1){
+					Map<String,Object> state=new HashMap<String,Object>();
+					state.put("opened", true);
+					state.put("selected", true);
+					map.put("state", state);
+				}
 				result.add(map);
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public boolean deleteCategories(String categoryIds) {
+		String[] ids=categoryIds.split(",");
+		Object[] obj=new Object[ids.length];
+		StringBuffer hql=new StringBuffer("delete from Categories ca where id in (");
+		for (int i=0;i<ids.length;i++){
+			if (i==0){
+				hql.append("?");
+			}else{
+				hql.append(",?");
+			}
+			obj[i]=Integer.parseInt(ids[i]);
+		}
+		hql.append(")");
+		
+		boolean flag=true;
+		try{
+			this.getCurrentDAO().batchExecute(hql.toString(), obj);
+		}catch(Exception ex){
+			ex.printStackTrace();
+			flag=false;
+		}
+		return flag;
 	}
 }

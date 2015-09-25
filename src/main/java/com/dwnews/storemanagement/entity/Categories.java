@@ -11,9 +11,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicInsert;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "categories", catalog = "dwnews_store_management")
+@DynamicInsert(true)
 public class Categories implements Serializable{
 	
 	/*

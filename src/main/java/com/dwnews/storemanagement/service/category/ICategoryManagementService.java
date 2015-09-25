@@ -18,4 +18,6 @@ public interface ICategoryManagementService extends IStoreManagementBaseService<
 	
 	public List<Map<String,Object>> findCategoriesForTree(Map<String, Object> parameters);
 	
+	public boolean deleteCategories(String categoryIds);
+	
 }
