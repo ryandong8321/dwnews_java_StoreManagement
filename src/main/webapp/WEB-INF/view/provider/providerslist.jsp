@@ -26,6 +26,7 @@
 <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
 <link href="<%=basePath%>assets/jstree/dist/themes/default/style.min.css" rel="stylesheet" type="text/css"/>
 <!-- END PAGE LEVEL PLUGIN STYLES -->
+<link href="http://cdn.bootcss.com/select2/4.0.0/css/select2.min.css" rel="stylesheet">
 <!-- BEGIN THEME STYLES -->
 <link href="<%=basePath%>assets/metronic/css/style-metronic.css" rel="stylesheet" type="text/css" />
 <link href="<%=basePath%>assets/metronic/css/style.css" rel="stylesheet" type="text/css" />
@@ -34,6 +35,10 @@
 <link href="<%=basePath%>assets/metronic/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
 <link href="<%=basePath%>assets/metronic/css/custom.css" rel="stylesheet" type="text/css" />
 <!-- END THEME STYLES -->
+<!-- BEGIN BOOTSTRAP TABLE -->
+<link rel="stylesheet" type="text/css" href="<%=basePath%>assets/bootstrap_table/bootstrap-table.css" />
+<!-- END BOOTSTRAP TABLE -->
+
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <!-- END HEAD -->
@@ -92,12 +97,11 @@
 			<div class="page-sidebar navbar-collapse collapse">
 				<!-- BEGIN SIDEBAR MENU -->
 				<ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
-					<li class="start active ">
+					<li class="">
 						<a href="<%=basePath%>categorymanagement/categoriestree.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 类别管理 </span> 
-							<span class="selected"></span>
-							<span class="arrow open"></span>
+							<span class="arrow "></span>
 						</a>
 					</li>
 					<li class="">
@@ -107,11 +111,12 @@
 							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="">
+					<li class="start active ">
 						<a href="<%=basePath%>providermanagement/providerslist.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 供应商管理 </span> 
-							<span class="arrow "></span>
+							<span class="selected"></span>
+							<span class="arrow open"></span>
 						</a>
 					</li>
 					<li class="">
@@ -169,9 +174,9 @@
 									<span> 操作 </span> <i class="fa fa-angle-down"></i>
 								</button>
 								<ul class="dropdown-menu pull-right" role="menu">
-									<li><a href="javascript:createCategory()"> 新建类别 </a></li>
-									<li><a href="javascript:modifyCategory()"> 修改类别 </a></li>
-									<li><a href="javascript:deleteCategory()"> 删除类别 </a></li>
+									<li><a href="javascript:createProvider()"> 新建供应商 </a></li>
+									<li><a href="javascript:modifyProvider()"> 修改供应商 </a></li>
+									<li><a href="javascript:deleteProvider()"> 删除供应商 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -194,12 +199,27 @@
 						<div class="portlet blue box">
 							<div class="portlet-title">
 								<div class="caption">
-									<i class="fa fa-cogs"></i>产品类别
+									<i class="fa fa-cogs"></i>产品供应商
 								</div>
 							</div>
 							<div class="portlet-body">
-								<div id="using_json_1" class="tree-demo">
-								</div>
+								<!-- BEGIN TABLE DATA-->
+									<table id="table" 
+										data-toggle="table" 
+										data-side-pagination="server"
+										data-pagination="true" 
+										data-url="<%=basePath%>providermanagement/initproviderstable.do">
+										<thead>
+											<tr>
+												<th data-field="state" data-checkbox="true"></th>
+												<th data-field="id">编号</th>
+												<th data-field="providerName">供应商名称</th>
+												<th data-field="contactName">联系人</th>
+												<th data-field="contactPhoneNumber">联系人电话</th>
+											</tr>
+										</thead>
+									</table>
+								<!-- END TABLE DATA-->
 							</div>
 						</div>
 					</div>
@@ -207,24 +227,36 @@
 					<div class="portlet green box">
 						<div class="portlet-title">
 							<div class="caption">
-								<i class="fa fa-cogs"></i>类别信息
+								<i class="fa fa-cogs"></i>供应商信息
 							</div>
 						</div>
 						<div class="portlet-body">
 							<div class="portlet-body form">
 								<!-- BEGIN FORM-->
-								<form action="" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
+								<form action="" class="form-horizontal form-bordered" method="POST">
 									<div class="form-body">
 										<div class="form-group">
-											<label class="control-label col-md-3">上级类别</label>
+											<label class="control-label col-md-3">供应商名称</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="上级类别" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
+												<input type="text" placeholder="供应商名称" class="form-control" value="" id="providerName" name="providerName" readonly="readonly"/>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-md-3">类别名称</label>
+											<label class="control-label col-md-3">联系人</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="类别名称" class="form-control" value="" id="categoryName" name="categoryName" readonly="readonly"/>
+												<input type="text" placeholder="联系人" class="form-control" value="" id="contactName" name="contactName" readonly="readonly"/>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">联系人电话</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="联系人电话" class="form-control" value="" id="contactPhoneNumber" name="contactPhoneNumber" readonly="readonly"/>
+											</div>
+										</div>
+										<div class="form-group" id="div_select_parent">
+											<label class="control-label col-md-3">供应品牌</label>
+											<div class="col-md-9" id="div_select">
+												<select class="js-states js-example-events form-control" multiple="multiple"></select>
 											</div>
 										</div>
 									</div>
@@ -232,15 +264,14 @@
 										<div class="row">
 											<div class="col-md-12">
 												<div class="col-md-offset-3 col-md-9">
-													<button type="button" class="btn green" onclick="saveCategory()">Submit</button>
+													<button type="button" class="btn green" onclick="saveProvider()">Save</button>
 													<button type="button" class="btn default">Cancel</button>
 												</div>
 											</div>
 										</div>
 									</div>
-									<input type="hidden" id="categoryId" name="categoryId" value="${category.id }" />
-									<input type="hidden" id="categoryParentId" name="categoryParentId" value="${category.parentId }" />
-									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
+									<input type="hidden" id="providerId" name="providerId" value="${provider.id }" />
+									<input type="hidden" id="brandIds" name="brandIds" value="" />
 									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
 								</form>
 								<!-- END FORM-->
@@ -251,9 +282,6 @@
 				</div>
 				<!-- END PAGE CONTENT-->
 			</div>
-			<form action="<%=basePath%>categorymanagement/showcategory.do" id="frmShowCategory" method="POST">
-				<input type="hidden" id="categoryId" name="categoryId" />
-			</form>
 		</div>
 		<!-- END CONTENT -->
 	</div>
@@ -283,119 +311,147 @@
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
-	<script src="<%=basePath%>assets/jstree/dist/jstree.js"></script>
+	<!-- BEGIN BOOTSTRAP TABLE -->
+	<script type="text/javascript" src="<%=basePath%>assets/bootstrap_table/bootstrap-table.js"></script>
+	<!-- END BOOTSTRAP TABLE -->
+	<script src="http://cdn.bootcss.com/select2/4.0.0/js/select2.min.js"></script>
 	<script>
 		jQuery(document).ready(function() {
+			var $table, selections, selectedId;
+			
 			// initiate layout and plugins
 			App.init();
 			
-			//initiate jstree
-			$(function () {
-				$('#using_json_1').jstree({ 
-					'core' : {
-						"multiple" : false,
-					    'data' : {
-							contentType: "application/json; charset=utf-8",
-					        url: "<%=basePath%>categorymanagement/inittreedata.do",
-					        dataType: 'json'
-					    }
-					},
-					"checkbox" : {
-						"keep_selected_style" : true,
-						"three_state":false,
-						"whole_node":false,
-						"tie_selection":false,
-						"cascade":"down+undetermined"
-				    },
-					"types" : {
-		                "default" : {
-		                    "icon" : "fa fa-folder icon-warning icon-lg"
-		                },
-		                "file" : {
-		                    "icon" : "fa fa-file icon-warning icon-lg"
-		                }
-		            },
-		            "plugins": ["types","checkbox"]
-				});
-			});
+			//initiate table
+			$table=$('#table');
+			
+			//initiate select2
+			var $sltBrand = $(".js-example-events");
+			$sltBrand.select2({
+				data:[]
+			}); 
+			
+			$(".js-example-events").prop("disabled", true);
 			
 			//add event listener
-			$('#using_json_1').on("changed.jstree", function (e, data) {
-			  	/* alert(data.selected);
-				var i, j, r = [];
-			    for(i = 0, j = data.selected.length; i < j; i++) {
-			      r.push(data.instance.get_node(data.selected[i]).text);
-			    }
-			    alert(r); */
-			    $("#parentName").val($('#using_json_1').jstree(true).get_node(data.instance.get_parent(data.selected)).text);
-			    $("#categoryName").val(data.instance.get_node(data.selected).text);
-			    $("#categoryId").val(data.selected);
-			    $("#categoryParentId").val(data.instance.get_parent(data.selected));
+			$('#table').on("check.bs.table", function (e, data) {
+				cleanAllFields();
+				$("#providerId").val(data.id);
+				$("#providerName").val(data.providerName);
+				$("#contactName").val(data.contactName);
+				$("#contactPhoneNumber").val(data.contactPhoneNumber);
+				refreshSelectObject(data.id);
+				
+				$(".js-example-events").prop("disabled", true);
+				
+				//contactName contactPhoneNumber
+				/*selections=$table.bootstrapTable('getSelections');
+				if (selections.length>1){
+					$table.bootstrapTable('uncheckAll');
+					$table.bootstrapTable('checkBy', {field:'id', values:[selectedId]});
+				}*/
+			});
+			
+			$('#table').on("uncheck.bs.table", function (e, data) {
+				if ($("#providerName").val()){
+					selectedId=data.id;
+					if (selectedId==$("#providerId").val()){
+						cleanAllFields();
+					}
+				}
 			});
 		});
 		
-		//refresh tree
-		function refreshTree(node){
-			if (node){
-				$('#using_json_1').jstree(true).load_node(node);
-			}else{
-				$('#using_json_1').jstree(true).refresh();
-			}
+		//refresh table
+		function refreshTable(table){
+			var $table=getInstanceOfTable();
+			$table.bootstrapTable('refresh');
 		}
 		
-		//get tree instance
-		function getInstanceOfTree(tree){
-			var treeInstance;
-			if (tree){
-				treeInstance=$('#'+tree).jstree(true);
+		//get table instance
+		function getInstanceOfTable(table){
+			var $table;
+			if (table){
+				$table=$("#"+table);
 			}else{
-				treeInstance=$('#using_json_1').jstree(true);
+				$table=$("#table");
 			}
-			return treeInstance;
+			return $table;
 		}
 		
-		//create category button action
-		function createCategory(){
-			$("#categoryName").attr('readonly', false);
+		function refreshSelectObject(providerId){
+			var $sltBrand = $(".js-example-events"), data;
+			//$sltBrand.select2("destroy");
+			$("#div_select").remove();
+			$("#div_select_parent").append('<div class="col-md-9" id="div_select"><select class="js-states js-example-events form-control" multiple="multiple" id="newSelect"></select></div>');
 			
-			var ref=getInstanceOfTree(),selection=ref.get_selected();
+			$.ajax({
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>providermanagement/getallbrand.do",
+		        data: "{'providerId':'"+providerId+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	data=result.data;
+		        }
+		    });
 			
-			$("#parentName").val(ref.get_node(selection).text);
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(selection);
+			$("#newSelect").select2({
+				data:data
+			});			
+		}
+		
+		//create provider button action
+		function createProvider(){
+			cleanAllFields();
+			
+			refreshSelectObject('');
+			
+			$("#providerName").attr('readonly', false);
+			$("#contactName").attr('readonly',false);
+			$("#contactPhoneNumber").attr('readonly',false);
+			$(".js-example-events").prop("disabled", false);
 		}
 
-		//modify category button action
-		function modifyCategory() {
-			var ref=getInstanceOfTree();
-			if (!ref.get_selected()){
-				showMessage("Hitting text to select option that you want to modify.");
+		//modify provider button action
+		function modifyProvider() {
+			if (!$("#providerId").val()){
+				showMessage("Checking a row that you want to modify.");
 				return;
 			}
-			$("#categoryName").attr('readonly', false);
+			
+			$("#providerName").attr('readonly', false);
+			$("#contactName").attr('readonly',false);
+			$("#contactPhoneNumber").attr('readonly',false);
+			$(".js-example-events").prop("disabled", false);
 		}
 		
-		//delete category button action
-		function deleteCategory() {
-			var ref=getInstanceOfTree();
-			if(!ref.get_checked()){
-				showMessage("check option you want to delete.");
+		//delete provider button action
+		function deleteProvider() {
+			var ref=getInstanceOfTable(), selections=ref.bootstrapTable('getSelections');
+			var m=[];
+			if(JSON.stringify(selections)=="[]"){
+				showMessage("Checking row(s) that you want to delete.");
 				return;
 			}
-			bootbox.confirm("<font size='3'>You checked option(s) will be deleted and all included subclass were deleted at the same time.</font>", function (result){
+			bootbox.confirm("<font size='3'>You checked row(s) will be deleted.</font>", function (result){
 				if (result==true){
+					$(selections).each(function(){
+						m.push(this.id);
+					});
+					
 					$.ajax({
 						type : "POST",
 						async : false,
 						contentType : "application/json; charset=utf-8",
-						url : "<%=basePath%>categorymanagement/deletecategory.do",
-				        data: "{'categoryIds':'"+ref.get_checked()+"'}",
+						url : "<%=basePath%>providermanagement/deleteprovider.do",
+				        data: "{'providerIds':'"+m.join()+"'}",
 				        dataType: 'json',
 				        success: function(result) {
 				        	if (result.status==1){
 				        		cleanAllFields();
-				   			 	refreshTree();
+				   			 	refreshTable();
 				        	}
 				        	showMessage(result.data);
 				        }
@@ -405,18 +461,29 @@
 		}
 		
 		function cleanAllFields(){
-			$("#parentName").val("");
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(null);
+			$("#providerName").attr('readonly',true);
+		    $("#providerName").val("");
+			
+			$("#contactName").attr('readonly',true);
+		    $("#contactName").val("");
+			
+			$("#contactPhoneNumber").attr('readonly',true);
+		    $("#contactPhoneNumber").val("");
+			 
+			$("#providerId").val(null);
+			
+			$(".js-example-events").val(null).trigger("change");
+			$(".js-example-events").prop("disabled", true);
+			
+			$("#brandIds").val("");
 		}
 
 		//check field and do save action
-		function saveCategory() {
-			var flag = true, id, parentid, categoryName;
+		function saveProvider() {
+			var flag = true;
 
-			if (!$("#categoryName").val()) {
-				constractAlertMessage("Input category NAME please!");
+			if (!$("#providerName").val()) {
+				constractAlertMessage("Input provider NAME please!");
 				flag = false;
 			}
 
@@ -425,45 +492,34 @@
 				return;
 			}
 
-			saveCategoryInfo();
+			saveProviderInfo();
 		}
 		
-		//save category information
-		function saveCategoryInfo(){
-			var id, parentid, categoryName;
+		//save provider information
+		function saveProviderInfo(){
+			var id, providerName, contactName, contactPhoneNumber, brandIds;
 			
-			id = $("#categoryId").val();
-			parentId = $("#categoryParentId").val();
-			categoryName = $("#categoryName").val();
+			id = $("#providerId").val();
+			providerName = $("#providerName").val();
+			contactName=$("#contactName").val();
+			contactPhoneNumber=$("#contactPhoneNumber").val();
+			brandIds=$("#newSelect").val();
 
 			$.ajax({
 				type : "POST",
 				async : false,
 				contentType : "application/json; charset=utf-8",
-				url : "<%=basePath%>categorymanagement/savecategory.do",
-		        data: "{'categoryId':'"+id+"' , 'parentId':'"+parentId+"' , 'categoryName':'"+categoryName+"'}",
+				url : "<%=basePath%>providermanagement/saveprovider.do",
+		        data: "{'providerId':'"+id+"' , 'providerName':'"+providerName+"' , 'contactName':'"+contactName+"', 'contactPhoneNumber':'"+contactPhoneNumber+"', 'brandIds':'"+brandIds+"'}",
 		        dataType: 'json',
 		        success: function(result) {
 		        	if (result.status==1){
-		   			 	$("#categoryName").attr('readonly',true);
-		   			 	refreshTree();
-		   			 	openTreeNode();
+		   			 	refreshTable();
+		   			 	cleanAllFields();
 		        	}
 		        	showMessage(result.data);
 		        }
 		    });
-		}
-		
-		function openTreeNode(node){
-			var ref=getInstanceOfTree();
-			if (node){
-				operationNode=node;
-			}else{
-				operationNode=ref.get_selected();
-			}
-			if (!ref.is_open(operationNode)){
-				ref.open_node(operationNode,false,0);
-			}
 		}
 		
 		//construct message for display

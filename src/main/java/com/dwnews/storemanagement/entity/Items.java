@@ -5,8 +5,11 @@ import static javax.persistence.GenerationType.IDENTITY;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -31,58 +34,70 @@ public class Items implements Serializable{
 	private String itemName;
 	
 	/*
-	 * 产品
+	 * 产品单位
 	 */
 	@Column(name = "item_unit", nullable = true, length=4)
 	private String itemUnit;
 	
 	/*
-	 * 
+	 * 产品价格
 	 */
 	@Column(name = "item_price", nullable = false)
 	private Double itemPrice;
 	
 	/*
-	 * 产品
+	 * 产品二维码
 	 */
 	@Column(name = "item_bar_code", nullable = false, length=128)
 	private String itemBarCode;
 	
 	/*
-	 * 产品
+	 * 产品库存
 	 */
 	@Column(name = "item_store_count", nullable = false)
 	private Integer itemStoreCount;
 	
 	/*
-	 * 产品
+	 * 产品类别
 	 */
 	@Column(name = "item_category_id", nullable = false)
 	private Integer itemCategoryId;
 	
 	/*
-	 * 产品
+	 * 产品图片位置
 	 */
 	@Column(name = "item_photo", nullable = true, length=128)
 	private String itemPhoto;
 	
 	/*
-	 * 产品
-	 */
-	@Column(name = "item_provider_id", nullable = true)
-	private Integer itemProviderId;
-	
-	/*
-	 * 产品
+	 * 产品商标
 	 */
 	@Column(name = "item_brand_id", nullable = true)
 	private Integer itemBrandId;
 	
 	/*
-	 * 产品
+	 * 产品规格
 	 */
 	@Column(name = "item_standard", nullable = true, length=64)
 	private String itemStandard;
+	
+	/*
+	 * 产品供应商ID
+	 */
+	@Column(name = "item_provider_id", nullable = true, length=128)
+	private String providers;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="id")
+	private Brand brands;
+
+	public Brand getBrands() {
+		return brands;
+	}
+
+	public void setBrands(Brand brands) {
+		this.brands = brands;
+	}
 
 	public Integer getId() {
 		return id;
@@ -148,14 +163,6 @@ public class Items implements Serializable{
 		this.itemPhoto = itemPhoto;
 	}
 
-	public Integer getItemProviderId() {
-		return itemProviderId;
-	}
-
-	public void setItemProviderId(Integer itemProviderId) {
-		this.itemProviderId = itemProviderId;
-	}
-
 	public Integer getItemBrandId() {
 		return itemBrandId;
 	}
@@ -171,13 +178,20 @@ public class Items implements Serializable{
 	public void setItemStandard(String itemStandard) {
 		this.itemStandard = itemStandard;
 	}
+	
+	public String getProviders() {
+		return providers;
+	}
+
+	public void setProviders(String providers) {
+		this.providers = providers;
+	}
 
 	@Override
 	public String toString() {
 		return "Items [id=" + id + ", itemName=" + itemName + ", itemUnit=" + itemUnit + ", itemPrice=" + itemPrice
 				+ ", itemBarCode=" + itemBarCode + ", itemStoreCount=" + itemStoreCount + ", itemCategoryId="
-				+ itemCategoryId + ", itemPhoto=" + itemPhoto + ", itemProviderId=" + itemProviderId + ", itemBrandId="
-				+ itemBrandId + ", itemStandard=" + itemStandard + "]";
+				+ itemCategoryId + ", itemPhoto=" + itemPhoto + ", itemBrandId=" + itemBrandId + ", itemStandard="
+				+ itemStandard + ", providers=" + providers + "]";
 	}
-
 }

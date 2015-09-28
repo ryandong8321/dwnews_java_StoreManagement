@@ -60,7 +60,7 @@ public class CategoryManagementServiceImpl
 		Object[] param = null;
 		StringBuffer hql = new StringBuffer("from Categories ca where 1=1");
 
-		Pagination<Categories> page = new Pagination<>();
+		Pagination<Categories> page = new Pagination<Categories>();
 		page.setFirst(rowNum);
 		page.setPageSize(pageSize);
 

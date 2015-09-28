@@ -1,5 +1,8 @@
 package com.dwnews.storemanagement.dao.item;
 
-public interface IItemManagementDAO {
+import com.dwnews.storemanagement.dao.IStoreManagementBaseDAO;
+import com.dwnews.storemanagement.entity.Items;
+
+public interface IItemManagementDAO extends IStoreManagementBaseDAO<Items, Integer> {
 
 }

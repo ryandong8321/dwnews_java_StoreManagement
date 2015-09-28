@@ -96,14 +96,28 @@
 						<a href="<%=basePath%>categorymanagement/categoriestree.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 类别管理 </span> 
-							<span class="selected"></span>
+							<span class="arrow "></span>
+						</a>
+					</li>
+					<li class="">
+						<a href="<%=basePath%>brandmanagement/brandslist.do"> 
+							<i class="fa fa-bookmark-o"></i>
+							<span class="title"> 品牌管理 </span> 
+							<span class="arrow "></span>
+						</a>
+					</li>
+					<li class="">
+						<a href="<%=basePath%>providermanagement/providerslist.do"> 
+							<i class="fa fa-bookmark-o"></i>
+							<span class="title"> 供应商管理 </span> 
 							<span class="arrow "></span>
 						</a>
 					</li>
 					<li class="start active ">
 						<a href="<%=basePath%>departmentmanagement/departmentstree.do"> 
 							<i class="fa fa-bookmark-o"></i>
-							<span class="title"> 部门管理 </span> 
+							<span class="title"> 部门管理 </span>
+							<span class="selected"></span> 
 							<span class="arrow open "></span>
 						</a>
 					</li>
