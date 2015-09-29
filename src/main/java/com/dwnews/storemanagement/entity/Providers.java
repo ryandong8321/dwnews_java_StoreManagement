@@ -19,36 +19,45 @@ import javax.persistence.Table;
 @Table(name = "providers", catalog = "dwnews_store_management")
 public class Providers implements Serializable{
 
-	/*
+	/**
 	 * 编号
 	 */
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "provider_id", unique = true, nullable = false)
 	private Integer id;
-	
-	/*
+
+	/**
 	 * 供应商名称
 	 */
 	@Column(name = "provider_name", nullable = false, length=128)
 	private String providerName;
 	
-	/*
+	/**
 	 * 供应商联系人
 	 */
 	@Column(name = "provider_contact_name", nullable = true, length=8)
 	private String contactName;
-	
-	/*
+
+	/**
 	 * 供应商联系人电话
 	 */
 	@Column(name = "provider_contact_phone", nullable = true, length=16)
 	private String contactPhoneNumber;
 	
+	/**
+	 * 供应的品牌
+	 */
 	@ManyToMany
 	@JoinTable(name="providers_brand_relationship", 
 		joinColumns={ @JoinColumn(name="relationship_provider_id") }, inverseJoinColumns={ @JoinColumn(name="relationship_brand_id") })
 	private List<Brand> brands;
+	
+	/**
+	 * 供应的商品
+	 */
+	@ManyToMany(mappedBy="providers")
+	private List<Items> items;
 
 	public Integer getId() {
 		return id;
@@ -90,10 +99,17 @@ public class Providers implements Serializable{
 		this.brands = brands;
 	}
 
+	public List<Items> getItems() {
+		return items;
+	}
+
+	public void setItems(List<Items> items) {
+		this.items = items;
+	}
+
 	@Override
 	public String toString() {
 		return "Providers [id=" + id + ", providerName=" + providerName + ", contactName=" + contactName
-				+ ", contactPhoneNumber=" + contactPhoneNumber + ", brands=" + brands + "]";
+				+ ", contactPhoneNumber=" + contactPhoneNumber + ", brands=" + brands + ", items=" + items + "]";
 	}
-	
 }

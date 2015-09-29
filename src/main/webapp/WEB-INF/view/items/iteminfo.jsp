@@ -26,6 +26,7 @@
 <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
 <link href="<%=basePath%>assets/jstree/dist/themes/default/style.min.css" rel="stylesheet" type="text/css"/>
 <!-- END PAGE LEVEL PLUGIN STYLES -->
+<link href="http://cdn.bootcss.com/select2/4.0.0/css/select2.min.css" rel="stylesheet">
 <!-- BEGIN THEME STYLES -->
 <link href="<%=basePath%>assets/metronic/css/style-metronic.css" rel="stylesheet" type="text/css" />
 <link href="<%=basePath%>assets/metronic/css/style.css" rel="stylesheet" type="text/css" />
@@ -34,6 +35,7 @@
 <link href="<%=basePath%>assets/metronic/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
 <link href="<%=basePath%>assets/metronic/css/custom.css" rel="stylesheet" type="text/css" />
 <!-- END THEME STYLES -->
+
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <!-- END HEAD -->
@@ -92,12 +94,11 @@
 			<div class="page-sidebar navbar-collapse collapse">
 				<!-- BEGIN SIDEBAR MENU -->
 				<ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
-					<li class="start active ">
+					<li class="">
 						<a href="<%=basePath%>categorymanagement/categoriestree.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 类别管理 </span> 
-							<span class="selected"></span>
-							<span class="arrow open"></span>
+							<span class="arrow "></span>
 						</a>
 					</li>
 					<li class="">
@@ -114,11 +115,12 @@
 							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="">
+					<li class="start active ">
 						<a href="<%=basePath%>itemmanagement/itemslist.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 商品管理 </span> 
-							<span class="arrow "></span>
+							<span class="selected"></span>
+							<span class="arrow open"></span>
 						</a>
 					</li>
 					<li class="">
@@ -166,72 +168,82 @@
 					<div class="col-md-12">
 						<!-- BEGIN PAGE TITLE & BREADCRUMB-->
 						<h3 class="page-title">
-							类别管理
+							商品管理
 						</h3>
-						<ul class="page-breadcrumb breadcrumb">
-							<li class="btn-group">
-								<button type="button" class="btn blue dropdown-toggle"
-									data-toggle="dropdown" data-hover="dropdown" data-delay="1000"
-									data-close-others="true">
-									<span> 操作 </span> <i class="fa fa-angle-down"></i>
-								</button>
-								<ul class="dropdown-menu pull-right" role="menu">
-									<li><a href="javascript:createCategory()"> 新建类别 </a></li>
-									<li><a href="javascript:modifyCategory()"> 修改类别 </a></li>
-									<li><a href="javascript:deleteCategory()"> 删除类别 </a></li>
-								</ul>
-							</li>
-							<li>
-								<i class="fa fa-home"></i>
-								库存管理
-								<i class="fa fa-angle-right"></i>
-							</li>
-							<li>
-								<a href="#">类别管理</a>
-								<i class="fa fa-angle-right"></i>
-							</li>
-						</ul>
 						<!-- END PAGE TITLE & BREADCRUMB-->
 					</div>
 				</div>
 				<!-- END PAGE HEADER-->
 				<!-- BEGIN PAGE CONTENT-->
 				<div class="row">
-					<div class="col-md-6">
-						<div class="portlet blue box">
+					<div class="col-md-12">
+						<div class="portlet box blue ">
 							<div class="portlet-title">
 								<div class="caption">
-									<i class="fa fa-cogs"></i>产品类别
+									<i class="fa fa-reorder"></i>商品信息
 								</div>
 							</div>
-							<div class="portlet-body">
-								<div id="using_json_1" class="tree-demo">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-					<div class="portlet green box">
-						<div class="portlet-title">
-							<div class="caption">
-								<i class="fa fa-cogs"></i>类别信息
-							</div>
-						</div>
-						<div class="portlet-body">
 							<div class="portlet-body form">
 								<!-- BEGIN FORM-->
-								<form action="" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
+								<form action="<%=basePath%>itemmanagement/saveitem.do" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
 									<div class="form-body">
 										<div class="form-group">
-											<label class="control-label col-md-3">上级类别</label>
+											<label class="control-label col-md-3">商品名称</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="上级类别" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
+												<input type="text" placeholder="商品名称" class="form-control" value="${item.itemName }" id="itemName" name="itemName" />
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-md-3">类别名称</label>
+											<label class="control-label col-md-3">商品单位</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="类别名称" class="form-control" value="" id="categoryName" name="categoryName" readonly="readonly"/>
+												<input type="text" placeholder="商品单位" class="form-control" value="${item.itemUnit }" id="itemUnit" name="itemUnit" />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">商品单价</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="商品单价" class="form-control" value="${item.itemPrice }" id="itemPrice" name="itemPrice" />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">商品二维码</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="商品二维码" class="form-control" value="${item.itemBarCode }" id="itemBarCode" name="itemBarCode" />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">商品库存</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="商品库存" class="form-control" value="${item.itemStoreCount }" id="itemStoreCount" name="itemStoreCount" />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">商品规格</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="商品规格" class="form-control" value="${item.itemStandard }" id="itemStandard" name="itemStandard" />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">
+												<a class=" btn default" href="#ajax" data-toggle="modal">
+													 商品类别
+												</a>
+											</label>
+											<div class="col-md-9">
+												<input type="text" placeholder="商品类别" class="form-control" value="${item.category.categoryName }" id="categoryName" name="categoryName"/>
+												<input type="hidden" value="${item.category.id }" id="category.id" name="category.id"/>
+											</div>
+										</div>
+										<div class="form-group" id="div_brand_parent">
+											<label class="control-label col-md-3">商品品牌</label>
+											<div class="col-md-9" id="div_brand_select">
+												<select class="js-states form-control" multiple="multiple" id="brandId" name="brandId"></select>
+											</div>
+										</div>
+										<div class="form-group" id="div_provider_parent">
+											<label class="control-label col-md-3">供货商</label>
+											<div class="col-md-9" id="div_provider_select">
+												<select class="js-states form-control" multiple="multiple" id="providerIds" name="providerIds"></select>
 											</div>
 										</div>
 									</div>
@@ -239,28 +251,50 @@
 										<div class="row">
 											<div class="col-md-12">
 												<div class="col-md-offset-3 col-md-9">
-													<button type="button" class="btn green" onclick="saveCategory()">Submit</button>
+													<button type="submit" class="btn green">
+														<i class="fa fa-check"></i> Submit
+													</button>
 													<button type="button" class="btn default">Cancel</button>
 												</div>
 											</div>
 										</div>
 									</div>
-									<input type="hidden" id="categoryId" name="categoryId" value="${category.id }" />
-									<input type="hidden" id="categoryParentId" name="categoryParentId" value="${category.parentId }" />
-									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
+									<input type="hidden" id="itemId" name="itemId" value="${item.id }" />
 									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
 								</form>
 								<!-- END FORM-->
 							</div>
 						</div>
 					</div>
-				</div>
+					
+					<div class="modal fade" id="ajax" role="basic" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="portlet blue box">
+											<div class="portlet-title">
+												<div class="caption">
+													<i class="fa fa-cogs"></i>产品类别
+												</div>
+											</div>
+											<div class="portlet-body">
+												<div id="using_json_1" class="tree-demo">
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn green" data-dismiss="modal">Close</button>
+												<button type="button" class="btn green" onclick="save()">Save</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				<!-- END PAGE CONTENT-->
 			</div>
-			<form action="<%=basePath%>categorymanagement/showcategory.do" id="frmShowCategory" method="POST">
-				<input type="hidden" id="categoryId" name="categoryId" />
-			</form>
 		</div>
 		<!-- END CONTENT -->
 	</div>
@@ -290,13 +324,51 @@
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
+	<script src="http://cdn.bootcss.com/select2/4.0.0/js/select2.min.js"></script>
 	<script src="<%=basePath%>assets/jstree/dist/jstree.js"></script>
 	<script>
 		jQuery(document).ready(function() {
+			var $brands, $providers, brandsData, providersData;
 			// initiate layout and plugins
 			App.init();
 			
-			//initiate jstree
+			//initiate select2
+			$brands=$("#brandId");
+			$providers=$("#providerIds");
+			
+			$.ajax({
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>itemmanagement/getallbrand.do",
+		        data: "{'itemId':'"+$("#itemId").val()+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	brandsData=result.data;
+		        }
+		    });
+			
+			$brands.select2({
+				data:brandsData
+			});
+			
+			$.ajax({
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>itemmanagement/getallproviders.do",
+		        data: "{'brandId':'"+$("#brandId").val()+"','itemId':'"+$("#itemId").val()+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	providersData=result.data;
+		        }
+		    });
+			
+			$providers.select2({
+				data:providersData
+			});
+			
+			//initiate tree
 			$(function () {
 				$('#using_json_1').jstree({ 
 					'core' : {
@@ -322,155 +394,77 @@
 		                    "icon" : "fa fa-file icon-warning icon-lg"
 		                }
 		            },
-		            "plugins": ["types","checkbox"]
+		            "plugins": ["types"]
 				});
 			});
 			
 			//add event listener
-			$('#using_json_1').on("changed.jstree", function (e, data) {
-			  	/* alert(data.selected);
-				var i, j, r = [];
-			    for(i = 0, j = data.selected.length; i < j; i++) {
-			      r.push(data.instance.get_node(data.selected[i]).text);
-			    }
-			    alert(r); */
-			    $("#parentName").val($('#using_json_1').jstree(true).get_node(data.instance.get_parent(data.selected)).text);
-			    $("#categoryName").val(data.instance.get_node(data.selected).text);
-			    $("#categoryId").val(data.selected);
-			    $("#categoryParentId").val(data.instance.get_parent(data.selected));
+			$brands.on("select2:select", function (e) { changeProviders($brands.val()); });
+			$brands.on("select2:unselect", function (e) { changeProviders($brands.val());});
+			
+			$('#using_json_1').on("select_node.jstree", function (e, data) {
+				alert("data.selected-->"+data.selected);
+				$("#categoryName").val(data.instance.get_node(data.selected).text);
+				document.getElementById("category.id").value=data.selected;
+				
+				alert(document.getElementById("category.id").value);
 			});
 		});
 		
-		//refresh tree
-		function refreshTree(node){
-			if (node){
-				$('#using_json_1').jstree(true).load_node(node);
-			}else{
-				$('#using_json_1').jstree(true).refresh();
-			}
-		}
 		
-		//get tree instance
-		function getInstanceOfTree(tree){
-			var treeInstance;
-			if (tree){
-				treeInstance=$('#'+tree).jstree(true);
-			}else{
-				treeInstance=$('#using_json_1').jstree(true);
-			}
-			return treeInstance;
-		}
-		
-		//create category button action
-		function createCategory(){
-			$("#categoryName").attr('readonly', false);
+		function changeProviders(brandId){
+			var data;
 			
-			var ref=getInstanceOfTree(),selection=ref.get_selected();
+			$("#div_provider_select").remove();
+			$("#div_provider_parent").append('<div class="col-md-9" id="div_provider_select"><select class="js-states form-control" multiple="multiple" id="providerIds" name="providerIds"></select></div>');
 			
-			$("#parentName").val(ref.get_node(selection).text);
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(selection);
-		}
-
-		//modify category button action
-		function modifyCategory() {
-			var ref=getInstanceOfTree();
-			if (!ref.get_selected()){
-				showMessage("Hitting text to select option that you want to modify.");
-				return;
-			}
-			$("#categoryName").attr('readonly', false);
-		}
-		
-		//delete category button action
-		function deleteCategory() {
-			var ref=getInstanceOfTree();
-			if(!ref.get_checked()){
-				showMessage("check option you want to delete.");
-				return;
-			}
-			bootbox.confirm("<font size='3'>You checked option(s) will be deleted and all included subclass were deleted at the same time.</font>", function (result){
-				if (result==true){
-					$.ajax({
-						type : "POST",
-						async : false,
-						contentType : "application/json; charset=utf-8",
-						url : "<%=basePath%>categorymanagement/deletecategory.do",
-				        data: "{'categoryIds':'"+ref.get_checked()+"'}",
-				        dataType: 'json',
-				        success: function(result) {
-				        	if (result.status==1){
-				        		cleanAllFields();
-				   			 	refreshTree();
-				        	}
-				        	showMessage(result.data);
-				        }
-				    });
-				}
-			});
-		}
-		
-		function cleanAllFields(){
-			$("#parentName").val("");
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(null);
+			$.ajax({
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>itemmanagement/getallproviders.do",
+		        data: "{'brandId':'"+$("#brandId").val()+"','itemId':'"+$("#itemId").val()+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	data=result.data;
+		        }
+		    });
+			
+			$("#providerIds").select2({
+				data:data
+			});			
 		}
 
 		//check field and do save action
-		function saveCategory() {
-			var flag = true, id, parentid, categoryName;
+		function checkAllInfo() {
+			var flag = true;
 
-			if (!$("#categoryName").val()) {
-				constractAlertMessage("Input category NAME please!");
+			if (!$("#itemName").val()) {
+				constractAlertMessage("Input item's NAME please!");
+				flag = false;
+			}
+			if (!$("#itemPrice").val()) {
+				constractAlertMessage("Input item's PRICE please!");
+				flag = false;
+			}
+			if (!$("#itemBarCode").val()) {
+				constractAlertMessage("Input item's BAR CODE please!");
+				flag = false;
+			}
+			if (!$("#itemStoreCount").val()) {
+				constractAlertMessage("Input item's STORE COUNT please!");
+				flag = false;
+			}
+			if (!$("#categoryId").val()) {
+				constractAlertMessage("Select CATEGORY of item please!");
 				flag = false;
 			}
 
 			if (!flag) {
 				showMessage();
-				return;
 			}
-
-			saveCategoryInfo();
-		}
-		
-		//save category information
-		function saveCategoryInfo(){
-			var id, parentid, categoryName;
 			
-			id = $("#categoryId").val();
-			parentId = $("#categoryParentId").val();
-			categoryName = $("#categoryName").val();
-
-			$.ajax({
-				type : "POST",
-				async : false,
-				contentType : "application/json; charset=utf-8",
-				url : "<%=basePath%>categorymanagement/savecategory.do",
-		        data: "{'categoryId':'"+id+"' , 'parentId':'"+parentId+"' , 'categoryName':'"+categoryName+"'}",
-		        dataType: 'json',
-		        success: function(result) {
-		        	if (result.status==1){
-		   			 	$("#categoryName").attr('readonly',true);
-		   			 	refreshTree();
-		   			 	openTreeNode();
-		        	}
-		        	showMessage(result.data);
-		        }
-		    });
-		}
-		
-		function openTreeNode(node){
-			var ref=getInstanceOfTree();
-			if (node){
-				operationNode=node;
-			}else{
-				operationNode=ref.get_selected();
-			}
-			if (!ref.is_open(operationNode)){
-				ref.open_node(operationNode,false,0);
-			}
+			return flag;
 		}
 		
 		//construct message for display

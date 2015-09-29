@@ -4,14 +4,18 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 @SuppressWarnings("serial")
 @Entity
@@ -19,7 +23,7 @@ import org.hibernate.annotations.DynamicInsert;
 @DynamicInsert(true)
 public class Categories implements Serializable{
 	
-	/*
+	/**
 	 * 编号
 	 */
 	@Id
@@ -27,29 +31,36 @@ public class Categories implements Serializable{
 	@Column(name = "category_id", unique = true, nullable = false)
 	private Integer id;
 
-	/*
+	/**
 	 * 类别名称
 	 */
 	@Column(name = "category_name", nullable = false, length=32)
 	private String categoryName;
 	
-	/*
+	/**
 	 * 上级类别编号
 	 */
 	@Column(name = "category_parent_id", nullable = false)
 	private Integer parentId;
 	
-	/*
+	/**
 	 * 备注
 	 */
 	@Column(name = "category_memo", length = 128)
 	private String categoryMemo;
 	
-	/*
+	/**
 	 * 类别创建时间
 	 */
 	@Column(name = "category_create_time", nullable = false)
 	private Date createTime;
+	
+	/**
+	 * 类别下产品
+	 */
+	@OneToMany(mappedBy="category")
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	private List<Items> items;
 
 	public Integer getId() {
 		return id;
@@ -91,10 +102,18 @@ public class Categories implements Serializable{
 		this.createTime = createTime;
 	}
 
+	public List<Items> getItems() {
+		return items;
+	}
+
+	public void setItems(List<Items> items) {
+		this.items = items;
+	}
+
 	@Override
 	public String toString() {
 		return "Categories [id=" + id + ", categoryName=" + categoryName + ", parentId=" + parentId + ", categoryMemo="
-				+ categoryMemo + ", createTime=" + createTime + "]";
+				+ categoryMemo + ", createTime=" + createTime + ", items=" + items + "]";
 	}
 
 }

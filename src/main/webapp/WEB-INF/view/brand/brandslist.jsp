@@ -119,6 +119,13 @@
 						</a>
 					</li>
 					<li class="">
+						<a href="<%=basePath%>itemmanagement/itemslist.do"> 
+							<i class="fa fa-bookmark-o"></i>
+							<span class="title"> 商品管理 </span> 
+							<span class="arrow "></span>
+						</a>
+					</li>
+					<li class="">
 						<a href="<%=basePath%>departmentmanagement/departmentstree.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 部门管理 </span> 

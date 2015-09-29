@@ -14,5 +14,4 @@ public interface IProviderManagementService extends IStoreManagementBaseService<
 	
 	public boolean deleteProviders(String providerIds);
 	
-	
 }

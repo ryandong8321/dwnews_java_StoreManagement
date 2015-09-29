@@ -34,6 +34,10 @@
 <link href="<%=basePath%>assets/metronic/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
 <link href="<%=basePath%>assets/metronic/css/custom.css" rel="stylesheet" type="text/css" />
 <!-- END THEME STYLES -->
+<!-- BEGIN BOOTSTRAP TABLE -->
+<link rel="stylesheet" type="text/css" href="<%=basePath%>assets/bootstrap_table/bootstrap-table.css" />
+<!-- END BOOTSTRAP TABLE -->
+
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <!-- END HEAD -->
@@ -92,12 +96,11 @@
 			<div class="page-sidebar navbar-collapse collapse">
 				<!-- BEGIN SIDEBAR MENU -->
 				<ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
-					<li class="start active ">
+					<li class="">
 						<a href="<%=basePath%>categorymanagement/categoriestree.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 类别管理 </span> 
-							<span class="selected"></span>
-							<span class="arrow open"></span>
+							<span class="arrow "></span>
 						</a>
 					</li>
 					<li class="">
@@ -114,11 +117,12 @@
 							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="">
+					<li class="start active ">
 						<a href="<%=basePath%>itemmanagement/itemslist.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 商品管理 </span> 
-							<span class="arrow "></span>
+							<span class="selected"></span>
+							<span class="arrow open"></span>
 						</a>
 					</li>
 					<li class="">
@@ -176,9 +180,8 @@
 									<span> 操作 </span> <i class="fa fa-angle-down"></i>
 								</button>
 								<ul class="dropdown-menu pull-right" role="menu">
-									<li><a href="javascript:createCategory()"> 新建类别 </a></li>
-									<li><a href="javascript:modifyCategory()"> 修改类别 </a></li>
-									<li><a href="javascript:deleteCategory()"> 删除类别 </a></li>
+									<li><a href="javascript:createItem()"> 新建商品 </a></li>
+									<li><a href="javascript:deleteItem()"> 删除商品 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -187,7 +190,7 @@
 								<i class="fa fa-angle-right"></i>
 							</li>
 							<li>
-								<a href="#">类别管理</a>
+								<a href="#">商品管理</a>
 								<i class="fa fa-angle-right"></i>
 							</li>
 						</ul>
@@ -196,71 +199,36 @@
 				</div>
 				<!-- END PAGE HEADER-->
 				<!-- BEGIN PAGE CONTENT-->
-				<div class="row">
-					<div class="col-md-6">
-						<div class="portlet blue box">
-							<div class="portlet-title">
-								<div class="caption">
-									<i class="fa fa-cogs"></i>产品类别
-								</div>
-							</div>
-							<div class="portlet-body">
-								<div id="using_json_1" class="tree-demo">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-					<div class="portlet green box">
-						<div class="portlet-title">
-							<div class="caption">
-								<i class="fa fa-cogs"></i>类别信息
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div class="portlet-body form">
-								<!-- BEGIN FORM-->
-								<form action="" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
-									<div class="form-body">
-										<div class="form-group">
-											<label class="control-label col-md-3">上级类别</label>
-											<div class="col-md-9">
-												<input type="text" placeholder="上级类别" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
-											</div>
-										</div>
-										<div class="form-group">
-											<label class="control-label col-md-3">类别名称</label>
-											<div class="col-md-9">
-												<input type="text" placeholder="类别名称" class="form-control" value="" id="categoryName" name="categoryName" readonly="readonly"/>
-											</div>
-										</div>
-									</div>
-									<div class="form-actions fluid">
-										<div class="row">
-											<div class="col-md-12">
-												<div class="col-md-offset-3 col-md-9">
-													<button type="button" class="btn green" onclick="saveCategory()">Submit</button>
-													<button type="button" class="btn default">Cancel</button>
-												</div>
-											</div>
-										</div>
-									</div>
-									<input type="hidden" id="categoryId" name="categoryId" value="${category.id }" />
-									<input type="hidden" id="categoryParentId" name="categoryParentId" value="${category.parentId }" />
-									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
-									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
-								</form>
-								<!-- END FORM-->
-							</div>
-						</div>
+				<div class="row ">
+					<div class="col-md-12">
+						<!-- BEGIN TABLE DATA-->
+							<table id="table" 
+								data-toggle="table" 
+								data-side-pagination="server"
+								data-pagination="true" 
+								data-url="<%=basePath%>itemmanagement/inititemstable.do">
+								<thead>
+									<tr>
+										<th data-field="state" data-checkbox="true"></th>
+										<th data-field="id">编号</th>
+										<th data-field="itemName">商品名称</th>
+										<th data-field="itemPrice">商品价格</th>
+										<th data-field="itemStandard">商品规格</th>
+										<th data-field="itemStoreCount">商品库存</th>
+										<th data-field="itemBarCode">商品二维码</th>
+										<th data-field="itemCategory">商品类别</th>
+										<th data-field="itemBrand">商品品牌</th>
+									</tr>
+								</thead>
+							</table>
+						<!-- END TABLE DATA-->
 					</div>
 				</div>
-				</div>
+				<form action="<%=basePath%>itemmanagement/showiteminfo.do" id="frmShowInfo" name="frmShowInfo" method="POST">
+					<input type="hidden" id="itemId" name="itemId" value=""/>
+				</form>
 				<!-- END PAGE CONTENT-->
 			</div>
-			<form action="<%=basePath%>categorymanagement/showcategory.do" id="frmShowCategory" method="POST">
-				<input type="hidden" id="categoryId" name="categoryId" />
-			</form>
 		</div>
 		<!-- END CONTENT -->
 	</div>
@@ -290,197 +258,96 @@
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
-	<script src="<%=basePath%>assets/jstree/dist/jstree.js"></script>
+	<!-- BEGIN BOOTSTRAP TABLE -->
+	<script type="text/javascript" src="<%=basePath%>assets/bootstrap_table/bootstrap-table.js"></script>
+	<!-- END BOOTSTRAP TABLE -->
 	<script>
 		jQuery(document).ready(function() {
+			var $table, selections, selectedId;
+			
 			// initiate layout and plugins
 			App.init();
 			
-			//initiate jstree
-			$(function () {
-				$('#using_json_1').jstree({ 
-					'core' : {
-						"multiple" : false,
-					    'data' : {
-							contentType: "application/json; charset=utf-8",
-					        url: "<%=basePath%>categorymanagement/inittreedata.do",
-					        dataType: 'json'
-					    }
-					},
-					"checkbox" : {
-						"keep_selected_style" : true,
-						"three_state":false,
-						"whole_node":false,
-						"tie_selection":false,
-						"cascade":"down+undetermined"
-				    },
-					"types" : {
-		                "default" : {
-		                    "icon" : "fa fa-folder icon-warning icon-lg"
-		                },
-		                "file" : {
-		                    "icon" : "fa fa-file icon-warning icon-lg"
-		                }
-		            },
-		            "plugins": ["types","checkbox"]
-				});
-			});
+			//initiate table
+			$table=$('#table');
 			
 			//add event listener
-			$('#using_json_1').on("changed.jstree", function (e, data) {
-			  	/* alert(data.selected);
-				var i, j, r = [];
-			    for(i = 0, j = data.selected.length; i < j; i++) {
-			      r.push(data.instance.get_node(data.selected[i]).text);
-			    }
-			    alert(r); */
-			    $("#parentName").val($('#using_json_1').jstree(true).get_node(data.instance.get_parent(data.selected)).text);
-			    $("#categoryName").val(data.instance.get_node(data.selected).text);
-			    $("#categoryId").val(data.selected);
-			    $("#categoryParentId").val(data.instance.get_parent(data.selected));
+			$('#table').on("check.bs.table", function (e, data) {
 			});
+			
+			$('#table').on("click-row.bs.table", function (e, data) {
+				$("#itemId").val(data.id);
+			});
+			
+			
+			$('#table').on("uncheck.bs.table", function (e, data) {
+			});
+			
+			var json="${result}";
+			if (json){
+				json=eval('(' + json + ')');
+				showMessage(json.data);
+			}
 		});
 		
-		//refresh tree
-		function refreshTree(node){
-			if (node){
-				$('#using_json_1').jstree(true).load_node(node);
-			}else{
-				$('#using_json_1').jstree(true).refresh();
-			}
+		//refresh table
+		function refreshTable(table){
+			var $table=getInstanceOfTable();
+			$table.bootstrapTable('refresh');
 		}
 		
-		//get tree instance
-		function getInstanceOfTree(tree){
-			var treeInstance;
-			if (tree){
-				treeInstance=$('#'+tree).jstree(true);
+		//get table instance
+		function getInstanceOfTable(table){
+			var $table;
+			if (table){
+				$table=$("#"+table);
 			}else{
-				treeInstance=$('#using_json_1').jstree(true);
+				$table=$("#table");
 			}
-			return treeInstance;
+			return $table;
 		}
 		
-		//create category button action
-		function createCategory(){
-			$("#categoryName").attr('readonly', false);
-			
-			var ref=getInstanceOfTree(),selection=ref.get_selected();
-			
-			$("#parentName").val(ref.get_node(selection).text);
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(selection);
+		//create item button action
+		function createItem(){
+			$("#frmShowInfo").submit();
 		}
-
-		//modify category button action
-		function modifyCategory() {
-			var ref=getInstanceOfTree();
-			if (!ref.get_selected()){
-				showMessage("Hitting text to select option that you want to modify.");
+		
+		function showItemInfo(){
+			alert($("#itemId").val());
+			$("#frmShowInfo").submit();
+		}
+		
+		//delete item button action
+		function deleteItem() {
+			var ref=getInstanceOfTable(), selections=ref.bootstrapTable('getSelections');
+			var m=[];
+			if(JSON.stringify(selections)=="[]"){
+				showMessage("Checking row(s) that you want to delete.");
 				return;
 			}
-			$("#categoryName").attr('readonly', false);
-		}
-		
-		//delete category button action
-		function deleteCategory() {
-			var ref=getInstanceOfTree();
-			if(!ref.get_checked()){
-				showMessage("check option you want to delete.");
-				return;
-			}
-			bootbox.confirm("<font size='3'>You checked option(s) will be deleted and all included subclass were deleted at the same time.</font>", function (result){
+			bootbox.confirm("<font size='3'>You checked row(s) will be deleted.</font>", function (result){
 				if (result==true){
+					$(selections).each(function(){
+						m.push(this.id);
+					});
+					
 					$.ajax({
 						type : "POST",
 						async : false,
 						contentType : "application/json; charset=utf-8",
-						url : "<%=basePath%>categorymanagement/deletecategory.do",
-				        data: "{'categoryIds':'"+ref.get_checked()+"'}",
+						url : "<%=basePath%>itemmanagement/deleteitems.do",
+				        data: "{'itemIds':'"+m.join()+"'}",
 				        dataType: 'json',
 				        success: function(result) {
 				        	if (result.status==1){
 				        		cleanAllFields();
-				   			 	refreshTree();
+				   			 	refreshTable();
 				        	}
 				        	showMessage(result.data);
 				        }
 				    });
 				}
 			});
-		}
-		
-		function cleanAllFields(){
-			$("#parentName").val("");
-		    $("#categoryName").val("");
-		    $("#categoryId").val(null);
-		    $("#categoryParentId").val(null);
-		}
-
-		//check field and do save action
-		function saveCategory() {
-			var flag = true, id, parentid, categoryName;
-
-			if (!$("#categoryName").val()) {
-				constractAlertMessage("Input category NAME please!");
-				flag = false;
-			}
-
-			if (!flag) {
-				showMessage();
-				return;
-			}
-
-			saveCategoryInfo();
-		}
-		
-		//save category information
-		function saveCategoryInfo(){
-			var id, parentid, categoryName;
-			
-			id = $("#categoryId").val();
-			parentId = $("#categoryParentId").val();
-			categoryName = $("#categoryName").val();
-
-			$.ajax({
-				type : "POST",
-				async : false,
-				contentType : "application/json; charset=utf-8",
-				url : "<%=basePath%>categorymanagement/savecategory.do",
-		        data: "{'categoryId':'"+id+"' , 'parentId':'"+parentId+"' , 'categoryName':'"+categoryName+"'}",
-		        dataType: 'json',
-		        success: function(result) {
-		        	if (result.status==1){
-		   			 	$("#categoryName").attr('readonly',true);
-		   			 	refreshTree();
-		   			 	openTreeNode();
-		        	}
-		        	showMessage(result.data);
-		        }
-		    });
-		}
-		
-		function openTreeNode(node){
-			var ref=getInstanceOfTree();
-			if (node){
-				operationNode=node;
-			}else{
-				operationNode=ref.get_selected();
-			}
-			if (!ref.is_open(operationNode)){
-				ref.open_node(operationNode,false,0);
-			}
-		}
-		
-		//construct message for display
-		var message;
-		function constructAlertMessage(msg){
-			if (!message){
-				message=msg;
-			}else{
-				message+="<br/>"+msg;
-			}
 		}
 		
 		function showMessage(msg){

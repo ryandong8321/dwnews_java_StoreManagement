@@ -21,7 +21,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 @Table(name = "brand", catalog = "dwnews_store_management")
 public class Brand implements Serializable{
 
-	/*
+	/**
 	 * 编号
 	 */
 	@Id
@@ -29,22 +29,28 @@ public class Brand implements Serializable{
 	@Column(name = "brand_id", unique = true, nullable = false)
 	private Integer id;
 	
-	/*
+	/**
 	 * 品牌名称
 	 */
 	@Column(name = "brand_name", nullable = false, length=32)
 	private String brandName;
 	
-	/*
+	/**
 	 * 备注
 	 */
 	@Column(name = "brand_memo", nullable = true, length=128)
 	private String brandMemo;
 	
-	@OneToMany(mappedBy="brands")
+	/**
+	 * 该品牌的商品
+	 */
+	@OneToMany(mappedBy="brand")
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	private List<Items> items;
 	
+	/**
+	 * 该品牌的供应商
+	 */
 	@ManyToMany(mappedBy="brands")
 	private List<Providers> providers;
 
