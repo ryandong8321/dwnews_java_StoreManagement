@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,13 +67,48 @@ public class ItemManagementController {
 	
 	@RequestMapping(value = "/inititemstable.do")
 	@ResponseBody
-	public String initItemsTable(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+	public String initItemsTable(HttpServletRequest request) {
 		logger.info("this is [initItemsTable.do] start ...");
 		
 		int rowNum = ServletRequestUtils.getIntParameter(request, "offset", 0);
 		int showCount = ServletRequestUtils.getIntParameter(request, "limit", 0);
 		
-		Map<String,Object> data=itemManagementService.findItems(rowNum,showCount,null);
+		String strSort=ServletRequestUtils.getStringParameter(request, "sort", null);
+		String strOrder=ServletRequestUtils.getStringParameter(request, "order", null);
+		
+		String search=ServletRequestUtils.getStringParameter(request, "search", null);
+		String filters=ServletRequestUtils.getStringParameter(request, "filters", null);
+		
+		Map<String, Object> parameters=null;
+		if (search!=null&&!search.equals("")){
+			parameters=new HashMap<String, Object>();
+			parameters.put("flag", " OR ");
+			parameters.put("tag", " like ?");
+			parameters.put("itemName", search);
+			parameters.put("itemBarCode", search);
+		}
+		
+		if (filters!=null&&!filters.equals("")){
+			parameters=new HashMap<String, Object>();
+			parameters.put("flag", " AND ");
+			parameters.put("tag", " = ?");
+			JSONObject json=JSONObject.fromObject(filters);
+			Iterator<?> it=json.keys();
+			String key=null;
+			while(it.hasNext()){
+				key=it.next().toString();
+				parameters.put(key, json.get(key));
+			}
+		}
+		
+		Map<String, String> mapSort=null;
+		if (strSort!=null&&!strSort.equals("")&&strOrder!=null&&!strOrder.equals("")){
+			mapSort=new HashMap<String, String>();
+			mapSort.put("sort", strSort);
+			mapSort.put("order", strOrder);
+		}
+		
+		Map<String,Object> data=itemManagementService.findItems(rowNum,showCount,parameters,mapSort);
 		
 		String result=JSONObject.fromObject(data).toString();
 		logger.info("this is [initItemsTable.do] data ["+result+"] ...");
@@ -224,8 +260,12 @@ public class ItemManagementController {
 	}
 	
 	@RequestMapping(value = "/saveitem.do", method=RequestMethod.POST)
-	public String saveItem(HttpServletRequest request, @ModelAttribute("item") Items item, String brandId, String providerIds) {
+	public String saveItem(HttpServletRequest request, @ModelAttribute("item") Items item, Integer itemId, String brandId, String providerIds) {
 		logger.info("this is [saveItem.do] start ...");
+		
+		if (itemId!=null&&itemId!=0){
+			item.setId(itemId);
+		}
 		
 		logger.info("this is [saveItem.do] item {"+item+"} ...");
 		logger.info("this is [saveItem.do] brandId {"+brandId+"} ...");
@@ -297,7 +337,7 @@ public class ItemManagementController {
 			}
 		}
 		logger.info("this is [saveItem.do] show result ["+result+"] ...");
-		request.setAttribute("result", JSONObject.fromMap(result).toString());
+		request.setAttribute("result", result.get("data"));
 		request.setAttribute("item", item);
 		return result.get("status").equals(1)?"forward:/itemmanagement/itemslist.do":"forward:/itemmanagement/showitem.do";
 	}

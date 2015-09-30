@@ -24,9 +24,9 @@
 <link href="<%=basePath%>assets/metronic/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
 <!-- END GLOBAL MANDATORY STYLES -->
 <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
+<link href="http://cdn.bootcss.com/select2/4.0.0/css/select2.min.css" rel="stylesheet">
 <link href="<%=basePath%>assets/jstree/dist/themes/default/style.min.css" rel="stylesheet" type="text/css"/>
 <!-- END PAGE LEVEL PLUGIN STYLES -->
-<link href="http://cdn.bootcss.com/select2/4.0.0/css/select2.min.css" rel="stylesheet">
 <!-- BEGIN THEME STYLES -->
 <link href="<%=basePath%>assets/metronic/css/style-metronic.css" rel="stylesheet" type="text/css" />
 <link href="<%=basePath%>assets/metronic/css/style.css" rel="stylesheet" type="text/css" />
@@ -185,12 +185,22 @@
 							</div>
 							<div class="portlet-body form">
 								<!-- BEGIN FORM-->
-								<form action="<%=basePath%>itemmanagement/saveitem.do" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
+								<form id="frmItems" action="<%=basePath%>itemmanagement/saveitem.do" class="form-horizontal form-bordered" method="POST">
 									<div class="form-body">
+										<!-- BEGIN FORM VALIDATE ALERT-->
+										<div class="alert alert-danger display-hide">
+											<button class="close" data-close="alert"></button>
+											You have some form errors. Please check below.
+										</div>
+										<div class="alert alert-success display-hide">
+											<button class="close" data-close="alert"></button>
+											Your form validation is successful!
+										</div>
+										<!-- END FORM VALIDATE ALERT-->
 										<div class="form-group">
-											<label class="control-label col-md-3">商品名称</label>
+											<label class="control-label col-md-3">商品名称<span class="required">*</span></label>
 											<div class="col-md-9">
-												<input type="text" placeholder="商品名称" class="form-control" value="${item.itemName }" id="itemName" name="itemName" />
+												<input type="text" placeholder="商品名称" class="form-control" data-required="1" value="${item.itemName }" id="itemName" name="itemName" />
 											</div>
 										</div>
 										<div class="form-group">
@@ -200,19 +210,19 @@
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-md-3">商品单价</label>
+											<label class="control-label col-md-3">商品单价<span class="required">*</span></label>
 											<div class="col-md-9">
 												<input type="text" placeholder="商品单价" class="form-control" value="${item.itemPrice }" id="itemPrice" name="itemPrice" />
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-md-3">商品二维码</label>
+											<label class="control-label col-md-3">商品二维码<span class="required">*</span></label>
 											<div class="col-md-9">
 												<input type="text" placeholder="商品二维码" class="form-control" value="${item.itemBarCode }" id="itemBarCode" name="itemBarCode" />
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-md-3">商品库存</label>
+											<label class="control-label col-md-3">商品库存<span class="required">*</span></label>
 											<div class="col-md-9">
 												<input type="text" placeholder="商品库存" class="form-control" value="${item.itemStoreCount }" id="itemStoreCount" name="itemStoreCount" />
 											</div>
@@ -228,9 +238,10 @@
 												<a class=" btn default" href="#ajax" data-toggle="modal">
 													 商品类别
 												</a>
+												<span class="required">*</span>
 											</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="商品类别" class="form-control" value="${item.category.categoryName }" id="categoryName" name="categoryName"/>
+												<input type="text" placeholder="商品类别" class="form-control" value="${item.category.categoryName }" id="categoryName" name="categoryName" readOnly="readOnly"/>
 												<input type="hidden" value="${item.category.id }" id="category.id" name="category.id"/>
 											</div>
 										</div>
@@ -312,7 +323,7 @@
 	<!-- BEGIN CORE PLUGINS -->
 	<script src="<%=basePath%>assets/metronic/plugins/jquery-1.10.2.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-	<script src="<%=basePath%>assets/metronic/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+	<%-- <script src="<%=basePath%>assets/metronic/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script> --%>
 	<script src="<%=basePath%>assets/metronic/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
@@ -320,12 +331,20 @@
 	<script src="<%=basePath%>assets/metronic/plugins/jquery.cokie.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
 	<!-- END CORE PLUGINS -->
-	<script src="<%=basePath%>assets/metronic/scripts/core/app.js"></script>
+	<!-- BEGIN VALIDATE -->
+	<script src="<%=basePath%>assets/metronic/plugins/jquery-validation/dist/jquery.validate.min.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/metronic/plugins/jquery-validation/dist/additional-methods.min.js" type="text/javascript"></script>
+	<!-- END VALIDATE -->
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
+	<!-- BEGIN SELECT2 -->
 	<script src="http://cdn.bootcss.com/select2/4.0.0/js/select2.min.js"></script>
+	<!-- END SELECT2 -->
+	<!-- BEGIN JSTREE -->
 	<script src="<%=basePath%>assets/jstree/dist/jstree.js"></script>
+	<!-- END JSTREE -->
+	<script src="<%=basePath%>assets/metronic/scripts/core/app.js"></script>
 	<script>
 		jQuery(document).ready(function() {
 			var $brands, $providers, brandsData, providersData;
@@ -403,14 +422,77 @@
 			$brands.on("select2:unselect", function (e) { changeProviders($brands.val());});
 			
 			$('#using_json_1').on("select_node.jstree", function (e, data) {
-				alert("data.selected-->"+data.selected);
 				$("#categoryName").val(data.instance.get_node(data.selected).text);
 				document.getElementById("category.id").value=data.selected;
-				
-				alert(document.getElementById("category.id").value);
 			});
+			
+			alert("1111");
+			handleValidation();
+			alert("2222");
+			
+			var result="${result}";
+			try{
+				if (result){
+					showMessage(result);
+				}
+			}catch(error){
+			}
 		});
 		
+		function handleValidation() {
+			var frmItems = $('#frmItems'), checkError = $('.alert-danger', frmItems), checkSuccess = $('.alert-success', frmItems);
+			
+			frmItems.validate({
+				errorElement: 'span', //default input error message container
+				errorClass: 'help-block', // default input error message class
+				focusInvalid: false, // do not focus the last invalid input
+				ignore: "",
+				rules: {
+					itemName: {
+						minlength: 2,
+						required: true
+					},
+					itemPrice: {
+						number: true,
+						required: true
+					},
+					itemBarCode: {
+						maxlength: 128,
+						required: true
+					},
+					itemStoreCount: {
+						maxlength: 6,
+						number: true,
+						required: true
+					},
+					categoryName: {
+						required: true
+					}
+				},
+				
+				invalidHandler: function (event, validator) { //display error alert on form submit
+					checkSuccess.hide();
+					checkError.show();
+				},
+				
+				highlight: function (element) { // hightlight error inputs
+					$(element).closest('.form-group').addClass('has-error'); // set error class to the control group
+				},
+				
+				unhighlight: function (element) { // revert the change done by hightlight
+					$(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
+				},
+				success: function (label) {
+					label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+				},
+				
+				submitHandler: function (form) {
+					checkSuccess.show();
+					checkError.hide();
+					form.submit();
+				}
+			});
+		}
 		
 		function changeProviders(brandId){
 			var data;
@@ -433,48 +515,6 @@
 			$("#providerIds").select2({
 				data:data
 			});			
-		}
-
-		//check field and do save action
-		function checkAllInfo() {
-			var flag = true;
-
-			if (!$("#itemName").val()) {
-				constractAlertMessage("Input item's NAME please!");
-				flag = false;
-			}
-			if (!$("#itemPrice").val()) {
-				constractAlertMessage("Input item's PRICE please!");
-				flag = false;
-			}
-			if (!$("#itemBarCode").val()) {
-				constractAlertMessage("Input item's BAR CODE please!");
-				flag = false;
-			}
-			if (!$("#itemStoreCount").val()) {
-				constractAlertMessage("Input item's STORE COUNT please!");
-				flag = false;
-			}
-			if (!$("#categoryId").val()) {
-				constractAlertMessage("Select CATEGORY of item please!");
-				flag = false;
-			}
-
-			if (!flag) {
-				showMessage();
-			}
-			
-			return flag;
-		}
-		
-		//construct message for display
-		var message;
-		function constructAlertMessage(msg){
-			if (!message){
-				message=msg;
-			}else{
-				message+="<br/>"+msg;
-			}
 		}
 		
 		function showMessage(msg){

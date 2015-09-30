@@ -182,6 +182,7 @@
 								<ul class="dropdown-menu pull-right" role="menu">
 									<li><a href="javascript:createItem()"> 新建商品 </a></li>
 									<li><a href="javascript:deleteItem()"> 删除商品 </a></li>
+									<li><a href="javascript:cleanOptions()"> 清除条件 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -206,15 +207,18 @@
 								data-toggle="table" 
 								data-side-pagination="server"
 								data-pagination="true" 
-								data-url="<%=basePath%>itemmanagement/inititemstable.do">
+								data-url="<%=basePath%>itemmanagement/inititemstable.do" 
+								data-search="true" 
+								data-advanced-search="true" 
+								data-id-table="advancedTable">
 								<thead>
 									<tr>
 										<th data-field="state" data-checkbox="true"></th>
 										<th data-field="id">编号</th>
 										<th data-field="itemName">商品名称</th>
-										<th data-field="itemPrice">商品价格</th>
+										<th data-field="itemPrice" data-sortable="true">商品价格</th>
 										<th data-field="itemStandard">商品规格</th>
-										<th data-field="itemStoreCount">商品库存</th>
+										<th data-field="itemStoreCount" data-sortable="true">商品库存</th>
 										<th data-field="itemBarCode">商品二维码</th>
 										<th data-field="itemCategory">商品类别</th>
 										<th data-field="itemBrand">商品品牌</th>
@@ -259,7 +263,8 @@
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
 	<!-- BEGIN BOOTSTRAP TABLE -->
-	<script type="text/javascript" src="<%=basePath%>assets/bootstrap_table/bootstrap-table.js"></script>
+	<script src="<%=basePath%>assets/bootstrap_table/bootstrap-table.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/bootstrap_table/extensions/toolbar/bootstrap-table-toolbar.js" type="text/javascript"></script>
 	<!-- END BOOTSTRAP TABLE -->
 	<script>
 		jQuery(document).ready(function() {
@@ -283,12 +288,30 @@
 			$('#table').on("uncheck.bs.table", function (e, data) {
 			});
 			
-			var json="${result}";
-			if (json){
-				json=eval('(' + json + ')');
-				showMessage(json.data);
+			var result="${result}";
+			try{
+				if (result){
+					showMessage(result);
+				}
+			}catch(error){
 			}
 		});
+		
+		function cleanOptions(){
+			$("#id").val('');
+			$("#itemName").val('');
+			$("#itemPrice").val('');
+			$("#itemStandard").val('');
+			$("#itemStoreCount").val('');
+			$("#itemBarCode").val('');
+			$("#itemCategory").val('');
+			$("#itemBrand").val('');
+			
+			var $table=getInstanceOfTable();
+			$table.bootstrapTable('resetSearch');
+			
+			alert("done");
+		}
 		
 		//refresh table
 		function refreshTable(table){
@@ -313,7 +336,6 @@
 		}
 		
 		function showItemInfo(){
-			alert($("#itemId").val());
 			$("#frmShowInfo").submit();
 		}
 		
@@ -321,6 +343,7 @@
 		function deleteItem() {
 			var ref=getInstanceOfTable(), selections=ref.bootstrapTable('getSelections');
 			var m=[];
+			
 			if(JSON.stringify(selections)=="[]"){
 				showMessage("Checking row(s) that you want to delete.");
 				return;
@@ -336,11 +359,10 @@
 						async : false,
 						contentType : "application/json; charset=utf-8",
 						url : "<%=basePath%>itemmanagement/deleteitems.do",
-				        data: "{'itemIds':'"+m.join()+"'}",
+				        data: "{'itemsIds':'"+m.join()+"'}",
 				        dataType: 'json',
 				        success: function(result) {
 				        	if (result.status==1){
-				        		cleanAllFields();
 				   			 	refreshTable();
 				        	}
 				        	showMessage(result.data);

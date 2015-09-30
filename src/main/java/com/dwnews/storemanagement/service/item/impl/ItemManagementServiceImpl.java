@@ -26,26 +26,44 @@ public class ItemManagementServiceImpl extends StoreManagementBaseServiceImpl<It
 	}
 
 	@Override
-	public Map<String, Object> findItems(Integer rowNum, Integer pageSize, Map<String, Object> parameters) {
+	public Map<String, Object> findItems(Integer rowNum, Integer pageSize, Map<String, Object> parameters, Map<String, String> sort) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		Object[] param = null;
-		StringBuffer hql = new StringBuffer("from Items its where 1=1");
+		StringBuffer hql = new StringBuffer("from Items its ");
 
 		Pagination<Items> page = new Pagination<Items>();
 		page.setFirst(rowNum);
 		page.setPageSize(pageSize);
 
 		if (parameters != null && !parameters.isEmpty()) {
-			param = new Object[parameters.size()];
+			hql.append(" where ");
+			
+			String flag=parameters.get("flag").toString();
+			String tag=parameters.get("tag").toString();
+			
+			param = new Object[parameters.size()-2];
 			int ind = 0;
 			for (String key : parameters.keySet()) {
-				hql.append(" and ");
+				if (key.equals("flag")||key.equals("tag")){
+					continue;
+				}
+				if (ind!=0){
+					hql.append(flag);
+				}
 				hql.append(key);
-				hql.append(" = ?");
-				param[ind++] = parameters.get(key);
+				hql.append(tag);
+				param[ind++] = flag.equals(" OR ")?"%"+parameters.get(key)+"%":parameters.get(key);
 			}
 		}
+		
+		if (sort!=null&&!sort.isEmpty()){
+			hql.append(" order by ");
+			hql.append(sort.get("sort"));
+			hql.append(" ");
+			hql.append(sort.get("order"));
+		}
+		
 		page = this.getCurrentDAO().findPage(page, hql.toString(), param);
 
 		if (page.getRows() != null && !page.getRows().isEmpty()) {
@@ -59,7 +77,7 @@ public class ItemManagementServiceImpl extends StoreManagementBaseServiceImpl<It
 				map.put("itemStoreCount", item.getItemStoreCount());
 				map.put("itemBarCode", item.getItemBarCode());
 				map.put("itemCategory", item.getCategory().getCategoryName());
-				map.put("itemBrand", item.getBrand().getBrandName());
+				map.put("itemBrand", item.getBrand()==null?"":item.getBrand().getBrandName());
 				result.add(map);
 			}
 		}
