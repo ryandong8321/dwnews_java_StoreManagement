@@ -14,9 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 @SuppressWarnings("serial")
 @Entity
@@ -95,6 +98,13 @@ public class Items implements Serializable{
 	@JoinTable(name="providers_items_relationship", 
 		joinColumns={ @JoinColumn(name="relationship_items_id") }, inverseJoinColumns={ @JoinColumn(name="relationship_provider_id") })
 	private List<Providers> providers;
+	
+	/**
+	 * 产品所在订单
+	 */
+	@OneToMany(mappedBy="billItem")
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	private List<ItemsInputOutput> bills;
 
 	public Integer getId() {
 		return id;
@@ -182,6 +192,14 @@ public class Items implements Serializable{
 
 	public void setProviders(List<Providers> providers) {
 		this.providers = providers;
+	}
+
+	public List<ItemsInputOutput> getBills() {
+		return bills;
+	}
+
+	public void setBills(List<ItemsInputOutput> bills) {
+		this.bills = bills;
 	}
 
 	@Override

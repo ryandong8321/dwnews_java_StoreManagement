@@ -61,6 +61,13 @@ public class Categories implements Serializable{
 	@OneToMany(mappedBy="category")
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	private List<Items> items;
+	
+	/**
+	 * 订单中产品类别
+	 */
+	@OneToMany(mappedBy="itemCategory")
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	private List<ItemsInputOutput> bills;
 
 	public Integer getId() {
 		return id;
@@ -110,10 +117,18 @@ public class Categories implements Serializable{
 		this.items = items;
 	}
 
+	public List<ItemsInputOutput> getBills() {
+		return bills;
+	}
+
+	public void setBills(List<ItemsInputOutput> bills) {
+		this.bills = bills;
+	}
+
 	@Override
 	public String toString() {
 		return "Categories [id=" + id + ", categoryName=" + categoryName + ", parentId=" + parentId + ", categoryMemo="
-				+ categoryMemo + ", createTime=" + createTime + ", items=" + items + "]";
+				+ categoryMemo + ", createTime=" + createTime + "]";
 	}
 
 }

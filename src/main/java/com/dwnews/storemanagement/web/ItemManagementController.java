@@ -326,11 +326,11 @@ public class ItemManagementController {
 			try{
 				logger.info("this is [saveItem.do] is saving ...");
 				itemManagementService.save(item);
-				logger.info("this is [saveItem.do] save provider done ...");
+				logger.info("this is [saveItem.do] save item done ...");
 				result.put("status", 1);
 				result.put("data", "save success!");
 			}catch(Exception ex){
-				logger.info("this is [saveItem.do] save provider error ...");
+				logger.info("this is [saveItem.do] save item error ...");
 				result.put("status", 0);
 				result.put("data", "save failed, try again!");
 				ex.printStackTrace();

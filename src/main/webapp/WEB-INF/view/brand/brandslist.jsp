@@ -6,6 +6,7 @@
 	request.setAttribute("BasePath", basePath);
 %>
 <!DOCTYPE html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!-- <html lang="en" class="no-js"> -->
 <html lang="en">
 <!-- BEGIN HEAD -->
@@ -134,22 +135,45 @@
 					</li>
 					<li class="">
 						<a href="javascript:;"> 
-							<i class="fa fa-bookmark-o"></i>
+							<i class="a fa-folder-open"></i>
 							<span class="title"> 出 / 入库管理 </span> 
 							<span class="arrow "></span>
 						</a>
+						<ul class="sub-menu">
+							<li>
+								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=1">
+									<i class="fa fa-cogs"></i> 出库管理 
+									<c:choose>
+										<c:when test="{ocategory==1}">
+											<span class="selected"></span>
+											<span class="arrow open"></span>
+										</c:when>
+										<c:otherwise>
+											<span class="arrow "></span>
+										</c:otherwise>
+									</c:choose>
+								</a>
+							</li>
+							<li>
+								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=2">
+									<i class="fa fa-globe"></i> 入库管理
+									<c:choose>
+										<c:when test="{ocategory==2}">
+											<span class="selected"></span>
+											<span class="arrow open"></span>
+										</c:when>
+										<c:otherwise>
+											<span class="arrow "></span>
+										</c:otherwise>
+									</c:choose>
+								</a>
+							</li>
+						</ul>
 					</li>
 					<li class="">
 						<a href="javascript:;"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 统计 </span> 
-							<span class="arrow "></span>
-						</a>
-					</li>
-					<li class="">
-						<a href="javascript:;">
-							<i class="fa fa-bookmark-o"></i> 
-							<span class="title"> 供货商管理 </span>
 							<span class="arrow "></span>
 						</a>
 					</li>

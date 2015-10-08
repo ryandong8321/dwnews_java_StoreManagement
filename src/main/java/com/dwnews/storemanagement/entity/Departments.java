@@ -4,14 +4,18 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 @SuppressWarnings("serial")
 @Entity
@@ -50,6 +54,13 @@ public class Departments implements Serializable{
 	 */
 	@Column(name = "department_create_time", nullable = false)
 	private Date createTime;
+	
+	/**
+	 * 部门相关订单
+	 */
+	@OneToMany(mappedBy="billDepartment")
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	private List<ItemsInputOutput> bills;
 
 	public Integer getId() {
 		return id;
@@ -89,6 +100,14 @@ public class Departments implements Serializable{
 
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+
+	public List<ItemsInputOutput> getBills() {
+		return bills;
+	}
+
+	public void setBills(List<ItemsInputOutput> bills) {
+		this.bills = bills;
 	}
 
 	@Override

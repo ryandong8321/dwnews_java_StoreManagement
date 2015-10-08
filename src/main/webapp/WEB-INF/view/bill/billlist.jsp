@@ -6,8 +6,8 @@
 	request.setAttribute("BasePath", basePath);
 %>
 <!DOCTYPE html>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!-- <html lang="en" class="no-js"> -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html lang="en">
 <!-- BEGIN HEAD -->
 <head>
@@ -35,6 +35,10 @@
 <link href="<%=basePath%>assets/metronic/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
 <link href="<%=basePath%>assets/metronic/css/custom.css" rel="stylesheet" type="text/css" />
 <!-- END THEME STYLES -->
+<!-- BEGIN BOOTSTRAP TABLE -->
+<link rel="stylesheet" type="text/css" href="<%=basePath%>assets/bootstrap_table/bootstrap-table.css" />
+<!-- END BOOTSTRAP TABLE -->
+
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <!-- END HEAD -->
@@ -121,19 +125,18 @@
 							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="start active ">
+					<li class="">
 						<a href="<%=basePath%>departmentmanagement/departmentstree.do"> 
 							<i class="fa fa-bookmark-o"></i>
-							<span class="title"> 部门管理 </span>
-							<span class="selected"></span> 
-							<span class="arrow open "></span>
+							<span class="title"> 部门管理 </span> 
+							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="">
+					<li class="start active ">
 						<a href="javascript:;"> 
 							<i class="a fa-folder-open"></i>
 							<span class="title"> 出 / 入库管理 </span> 
-							<span class="arrow "></span>
+							<span class="arrow open"></span>
 						</a>
 						<ul class="sub-menu">
 							<li>
@@ -142,12 +145,9 @@
 									<c:choose>
 										<c:when test="{ocategory==1}">
 											<span class="selected"></span>
-											<span class="arrow open"></span>
 										</c:when>
-										<c:otherwise>
-											<span class="arrow "></span>
-										</c:otherwise>
 									</c:choose>
+									<span class="arrow "></span>
 								</a>
 							</li>
 							<li>
@@ -156,12 +156,9 @@
 									<c:choose>
 										<c:when test="{ocategory==2}">
 											<span class="selected"></span>
-											<span class="arrow open"></span>
 										</c:when>
-										<c:otherwise>
-											<span class="arrow "></span>
-										</c:otherwise>
 									</c:choose>
+									<span class="arrow "></span>
 								</a>
 							</li>
 						</ul>
@@ -190,7 +187,7 @@
 					<div class="col-md-12">
 						<!-- BEGIN PAGE TITLE & BREADCRUMB-->
 						<h3 class="page-title">
-							部门管理
+							管理
 						</h3>
 						<ul class="page-breadcrumb breadcrumb">
 							<li class="btn-group">
@@ -200,9 +197,10 @@
 									<span> 操作 </span> <i class="fa fa-angle-down"></i>
 								</button>
 								<ul class="dropdown-menu pull-right" role="menu">
-									<li><a href="javascript:createDepartment()"> 新建部门 </a></li>
-									<li><a href="javascript:modifyDepartment()"> 修改部门 </a></li>
-									<li><a href="javascript:deleteDepartment()"> 删除部门 </a></li>
+									<li><a href="javascript:createBill()"> 提交申请 </a></li>
+									<li><a href="javascript:deleteBill()"> 删除申请 </a></li>
+									<li><a href="javascript:verifyConfirm()"> 审批通过 </a></li>
+									<li><a href="javascript:verifyPass()"> 审批不通过 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -211,7 +209,7 @@
 								<i class="fa fa-angle-right"></i>
 							</li>
 							<li>
-								<a href="#">部门管理</a>
+								<a href="#">出 / 入库管理</a>
 								<i class="fa fa-angle-right"></i>
 							</li>
 						</ul>
@@ -220,71 +218,36 @@
 				</div>
 				<!-- END PAGE HEADER-->
 				<!-- BEGIN PAGE CONTENT-->
-				<div class="row">
-					<div class="col-md-6">
-						<div class="portlet blue box">
-							<div class="portlet-title">
-								<div class="caption">
-									<i class="fa fa-cogs"></i>公司部门
-								</div>
-							</div>
-							<div class="portlet-body">
-								<div id="using_json_1" class="tree-demo">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-					<div class="portlet green box">
-						<div class="portlet-title">
-							<div class="caption">
-								<i class="fa fa-cogs"></i>部门信息
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div class="portlet-body form">
-								<!-- BEGIN FORM-->
-								<form action="" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
-									<div class="form-body">
-										<div class="form-group">
-											<label class="control-label col-md-3">上级部门</label>
-											<div class="col-md-9">
-												<input type="text" placeholder="上级部门" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
-											</div>
-										</div>
-										<div class="form-group">
-											<label class="control-label col-md-3">部门名称</label>
-											<div class="col-md-9">
-												<input type="text" placeholder="部门名称" class="form-control" value="" id="departmentName" name="departmentName" readonly="readonly"/>
-											</div>
-										</div>
-									</div>
-									<div class="form-actions fluid">
-										<div class="row">
-											<div class="col-md-12">
-												<div class="col-md-offset-3 col-md-9">
-													<button type="button" class="btn green" onclick="saveDepartment()">Submit</button>
-													<button type="button" class="btn default">Cancel</button>
-												</div>
-											</div>
-										</div>
-									</div>
-									<input type="hidden" id="departmentId" name="departmentId" value="${department.id }" />
-									<input type="hidden" id="departmentParentId" name="departmentParentId" value="${department.parentId }" />
-									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
-									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
-								</form>
-								<!-- END FORM-->
-							</div>
-						</div>
+				<div class="row ">
+					<div class="col-md-12">
+						<!-- BEGIN TABLE DATA-->
+							<table id="table" 
+								data-toggle="table" 
+								data-side-pagination="server"
+								data-pagination="true" 
+								data-url="<%=basePath%>billmanagement/initbilltable.do?ocategory={ocategory}">
+								<thead>
+									<tr>
+										<th data-field="state" data-checkbox="true"></th>
+										<th data-field="id">编号</th>
+										<th data-field="billItemName">商品名称</th>
+										<th data-field="billDepartmentName">申请部门</th>
+										<th data-field="billItemBarCode">商品二维码</th>
+										<th data-field="billCount" data-sortable="true">商品数量</th>
+										<th data-field="billOperationTime">申请日期</th>
+										<th data-field="billVerify">申请审批状态</th>
+									</tr>
+								</thead>
+							</table>
+						<!-- END TABLE DATA-->
 					</div>
 				</div>
-				</div>
+				<form action="<%=basePath%>billmanagement/showbillinfo.do" id="frmShowInfo" name="frmShowInfo" method="POST">
+					<input type="hidden" id="billId" name="billId" value=""/>
+					<input type="hidden" id="ocategory" name="ocategory" value="{ocategory}"/>
+				</form>
 				<!-- END PAGE CONTENT-->
 			</div>
-			<form action="" id="frmShowDepartment" method="POST">
-				<input type="hidden" id="departmentId" name="departmentId" />
-			</form>
 		</div>
 		<!-- END CONTENT -->
 	</div>
@@ -314,197 +277,108 @@
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
-	<script src="<%=basePath%>assets/jstree/dist/jstree.js"></script>
+	<!-- BEGIN BOOTSTRAP TABLE -->
+	<script src="<%=basePath%>assets/bootstrap_table/bootstrap-table.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/bootstrap_table/extensions/toolbar/bootstrap-table-toolbar.js" type="text/javascript"></script>
+	<!-- END BOOTSTRAP TABLE -->
 	<script>
 		jQuery(document).ready(function() {
+			var $table, selections, selectedId;
+			
 			// initiate layout and plugins
 			App.init();
 			
-			//initiate jstree
-			$(function () {
-				$('#using_json_1').jstree({ 
-					'core' : {
-						"multiple" : false,
-					    'data' : {
-							contentType: "application/json; charset=utf-8",
-					        url: "<%=basePath%>departmentmanagement/inittreedata.do",
-					        dataType: 'json'
-					    }
-					},
-					"checkbox" : {
-						"keep_selected_style" : true,
-						"three_state":false,
-						"whole_node":false,
-						"tie_selection":false,
-						"cascade":"down+undetermined"
-				    },
-					"types" : {
-		                "default" : {
-		                    "icon" : "fa fa-folder icon-warning icon-lg"
-		                },
-		                "file" : {
-		                    "icon" : "fa fa-file icon-warning icon-lg"
-		                }
-		            },
-		            "plugins": ["types","checkbox"]
-				});
-			});
+			//initiate table
+			$table=$('#table');
 			
 			//add event listener
-			$('#using_json_1').on("changed.jstree", function (e, data) {
-			  	/* alert(data.selected);
-				var i, j, r = [];
-			    for(i = 0, j = data.selected.length; i < j; i++) {
-			      r.push(data.instance.get_node(data.selected[i]).text);
-			    }
-			    alert(r); */
-			    $("#parentName").val($('#using_json_1').jstree(true).get_node(data.instance.get_parent(data.selected)).text);
-			    $("#departmentName").val(data.instance.get_node(data.selected).text);
-			    $("#departmentId").val(data.selected);
-			    $("#departmentParentId").val(data.instance.get_parent(data.selected));
+			$('#table').on("check.bs.table", function (e, data) {
 			});
+			
+			$('#table').on("click-row.bs.table", function (e, data) {
+				$("#billId").val(data.id);
+			});
+			
+			
+			$('#table').on("uncheck.bs.table", function (e, data) {
+			});
+			
+			var result="${result}";
+			try{
+				if (result){
+					showMessage(result);
+				}
+			}catch(error){
+			}
 		});
 		
-		//refresh tree
-		function refreshTree(node){
-			if (node){
-				$('#using_json_1').jstree(true).load_node(node);
-			}else{
-				$('#using_json_1').jstree(true).refresh();
-			}
+		function cleanOptions(){
+			$("#itemName").val('');
+			$("#departmentName").val('');
+			$("#itemBarCode").val('');
+			$("#billCount").val('');
+			$("#startDate").val('');
+			$("#itemCategory").val('');
+			$("#verifyStatus").val(-1);
 		}
 		
-		//get tree instance
-		function getInstanceOfTree(tree){
-			var treeInstance;
-			if (tree){
-				treeInstance=$('#'+tree).jstree(true);
-			}else{
-				treeInstance=$('#using_json_1').jstree(true);
-			}
-			return treeInstance;
+		//refresh table
+		function refreshTable(table){
+			var $table=getInstanceOfTable();
+			$table.bootstrapTable('refresh');
 		}
 		
-		//create department button action
-		function createDepartment(){
-			$("#departmentName").attr('readonly', false);
-			
-			var ref=getInstanceOfTree(),selection=ref.get_selected();
-			
-			$("#parentName").val(ref.get_node(selection).text);
-		    $("#departmentName").val("");
-		    $("#departmentId").val(null);
-		    $("#departmentParentId").val(selection);
+		//get table instance
+		function getInstanceOfTable(table){
+			var $table;
+			if (table){
+				$table=$("#"+table);
+			}else{
+				$table=$("#table");
+			}
+			return $table;
 		}
-
-		//modify department button action
-		function modifyDepartment() {
-			var ref=getInstanceOfTree();
-			if (!ref.get_selected()){
-				showMessage("Hitting text to select option that you want to modify.");
+		
+		//create bill button action
+		function createBill(){
+			$("#frmShowInfo").submit();
+		}
+		
+		function showBillInfo(){
+			$("#frmShowInfo").submit();
+		}
+		
+		//delete bill button action
+		function deleteBill() {
+			var ref=getInstanceOfTable(), selections=ref.bootstrapTable('getSelections');
+			var m=[];
+			
+			if(JSON.stringify(selections)=="[]"){
+				showMessage("Checking row(s) that you want to delete.");
 				return;
 			}
-			$("#departmentName").attr('readonly', false);
-		}
-		
-		//delete department button action
-		function deleteDepartment() {
-			var ref=getInstanceOfTree();
-			if(!ref.get_checked()){
-				showMessage("check option you want to delete.");
-				return;
-			}
-			bootbox.confirm("<font size='3'>You checked option(s) will be deleted and all included subclass were deleted at the same time.</font>", function (result){
+			bootbox.confirm("<font size='3'>You checked row(s) will be deleted.</font>", function (result){
 				if (result==true){
+					$(selections).each(function(){
+						m.push(this.id);
+					});
+					
 					$.ajax({
 						type : "POST",
 						async : false,
 						contentType : "application/json; charset=utf-8",
-						url : "<%=basePath%>departmentmanagement/deletedepartment.do",
-				        data: "{'departmentIds':'"+ref.get_checked()+"'}",
+						url : "<%=basePath%>billmanagement/deletebill.do",
+				        data: "{'billIds':'"+m.join()+"'}",
 				        dataType: 'json',
 				        success: function(result) {
 				        	if (result.status==1){
-				        		cleanAllFields();
-				   			 	refreshTree();
+				   			 	refreshTable();
 				        	}
 				        	showMessage(result.data);
 				        }
 				    });
 				}
 			});
-		}
-		
-		function cleanAllFields(){
-			$("#parentName").val("");
-		    $("#departmentName").val("");
-		    $("#departmentId").val(null);
-		    $("#departmentParentId").val(null);
-		}
-
-		//check field and do save action
-		function saveDepartment() {
-			var flag = true, id, parentid, departmentName;
-
-			if (!$("#departmentName").val()) {
-				constractAlertMessage("Input department NAME please!");
-				flag = false;
-			}
-
-			if (!flag) {
-				showMessage();
-				return;
-			}
-
-			saveDepartmentInfo();
-		}
-		
-		//save department information
-		function saveDepartmentInfo(){
-			var id, parentid, departmentName;
-			
-			id = $("#departmentId").val();
-			parentId = $("#departmentParentId").val();
-			departmentName = $("#departmentName").val();
-
-			$.ajax({
-				type : "POST",
-				async : false,
-				contentType : "application/json; charset=utf-8",
-				url : "<%=basePath%>departmentmanagement/savedepartment.do",
-		        data: "{'departmentId':'"+id+"' , 'parentId':'"+parentId+"' , 'departmentName':'"+departmentName+"'}",
-		        dataType: 'json',
-		        success: function(result) {
-		        	if (result.status==1){
-		   			 	$("#departmentName").attr('readonly',true);
-		   			 	refreshTree();
-		   			 	openTreeNode();
-		        	}
-		        	showMessage(result.data);
-		        }
-		    });
-		}
-		
-		function openTreeNode(node){
-			var ref=getInstanceOfTree();
-			if (node){
-				operationNode=node;
-			}else{
-				operationNode=ref.get_selected();
-			}
-			if (!ref.is_open(operationNode)){
-				ref.open_node(operationNode,false,0);
-			}
-		}
-		
-		//construct message for display
-		var message;
-		function constructAlertMessage(msg){
-			if (!message){
-				message=msg;
-			}else{
-				message+="<br/>"+msg;
-			}
 		}
 		
 		function showMessage(msg){

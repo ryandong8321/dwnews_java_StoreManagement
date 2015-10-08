@@ -25,6 +25,7 @@
 <link href="<%=basePath%>assets/metronic/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
 <!-- END GLOBAL MANDATORY STYLES -->
 <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
+<link href="http://cdn.bootcss.com/select2/4.0.0/css/select2.min.css" rel="stylesheet">
 <link href="<%=basePath%>assets/jstree/dist/themes/default/style.min.css" rel="stylesheet" type="text/css"/>
 <!-- END PAGE LEVEL PLUGIN STYLES -->
 <!-- BEGIN THEME STYLES -->
@@ -35,6 +36,7 @@
 <link href="<%=basePath%>assets/metronic/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
 <link href="<%=basePath%>assets/metronic/css/custom.css" rel="stylesheet" type="text/css" />
 <!-- END THEME STYLES -->
+
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <!-- END HEAD -->
@@ -114,19 +116,19 @@
 							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="">
+					<li class="start active ">
 						<a href="<%=basePath%>itemmanagement/itemslist.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 商品管理 </span> 
-							<span class="arrow "></span>
+							<span class="selected"></span>
+							<span class="arrow open"></span>
 						</a>
 					</li>
-					<li class="start active ">
+					<li class="">
 						<a href="<%=basePath%>departmentmanagement/departmentstree.do"> 
 							<i class="fa fa-bookmark-o"></i>
-							<span class="title"> 部门管理 </span>
-							<span class="selected"></span> 
-							<span class="arrow open "></span>
+							<span class="title"> 部门管理 </span> 
+							<span class="arrow "></span>
 						</a>
 					</li>
 					<li class="">
@@ -190,72 +192,75 @@
 					<div class="col-md-12">
 						<!-- BEGIN PAGE TITLE & BREADCRUMB-->
 						<h3 class="page-title">
-							部门管理
+							管理
 						</h3>
-						<ul class="page-breadcrumb breadcrumb">
-							<li class="btn-group">
-								<button type="button" class="btn blue dropdown-toggle"
-									data-toggle="dropdown" data-hover="dropdown" data-delay="1000"
-									data-close-others="true">
-									<span> 操作 </span> <i class="fa fa-angle-down"></i>
-								</button>
-								<ul class="dropdown-menu pull-right" role="menu">
-									<li><a href="javascript:createDepartment()"> 新建部门 </a></li>
-									<li><a href="javascript:modifyDepartment()"> 修改部门 </a></li>
-									<li><a href="javascript:deleteDepartment()"> 删除部门 </a></li>
-								</ul>
-							</li>
-							<li>
-								<i class="fa fa-home"></i>
-								库存管理
-								<i class="fa fa-angle-right"></i>
-							</li>
-							<li>
-								<a href="#">部门管理</a>
-								<i class="fa fa-angle-right"></i>
-							</li>
-						</ul>
 						<!-- END PAGE TITLE & BREADCRUMB-->
 					</div>
 				</div>
 				<!-- END PAGE HEADER-->
 				<!-- BEGIN PAGE CONTENT-->
 				<div class="row">
-					<div class="col-md-6">
-						<div class="portlet blue box">
+					<div class="col-md-12">
+						<div class="portlet box blue ">
 							<div class="portlet-title">
 								<div class="caption">
-									<i class="fa fa-cogs"></i>公司部门
+									<i class="fa fa-reorder"></i>申请信息
 								</div>
 							</div>
-							<div class="portlet-body">
-								<div id="using_json_1" class="tree-demo">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-					<div class="portlet green box">
-						<div class="portlet-title">
-							<div class="caption">
-								<i class="fa fa-cogs"></i>部门信息
-							</div>
-						</div>
-						<div class="portlet-body">
 							<div class="portlet-body form">
 								<!-- BEGIN FORM-->
-								<form action="" class="form-horizontal form-bordered" onsubmit="return checkAllInfo();" method="POST">
+								<form id="frmBill" action="<%=basePath%>billmanagement/savebill.do" class="form-horizontal form-bordered" method="POST">
 									<div class="form-body">
+										<!-- BEGIN FORM VALIDATE ALERT-->
+										<div class="alert alert-danger display-hide">
+											<button class="close" data-close="alert"></button>
+											You have some form errors. Please check below.
+										</div>
+										<div class="alert alert-success display-hide">
+											<button class="close" data-close="alert"></button>
+											Your form validation is successful!
+										</div>
+										<!-- END FORM VALIDATE ALERT-->
 										<div class="form-group">
-											<label class="control-label col-md-3">上级部门</label>
+											<label class="control-label col-md-3">
+												<a class=" btn default" href="#billDepartment" data-toggle="modal">
+													 申请部门
+												</a>
+												<span class="required">*</span>
+											</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="上级部门" class="form-control" value="" id="parentName" name="parentName" readonly="readonly"/>
+												<input type="text" placeholder="申请部门" class="form-control" value="${bill.billDepartment.departmentName }" id="departmentName" name="departmentName" readOnly="readOnly"/>
+												<input type="hidden" value="${bill.billDepartment.id }" id="billDepartment.id" name="billDepartment.id"/>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-md-3">部门名称</label>
+											<label class="control-label col-md-3">
+												<a class=" btn default" href="#ajax" data-toggle="modal">
+													 商品类别
+												</a>
+												<span class="required">*</span>
+											</label>
 											<div class="col-md-9">
-												<input type="text" placeholder="部门名称" class="form-control" value="" id="departmentName" name="departmentName" readonly="readonly"/>
+												<input type="text" placeholder="商品类别" class="form-control" value="${bill.itemCategory.categoryName }" id="categoryName" name="categoryName" readOnly="readOnly"/>
+												<input type="hidden" value="${bill.itemCategory.id }" id="itemCategory.id" name="itemCategory.id"/>
+											</div>
+										</div>
+										<div class="form-group" id="div_billitem_parent">
+											<label class="control-label col-md-3">商品名称</label><span class="required">*</span>
+											<div class="col-md-9" id="div_billitem_select">
+												<select class="js-states form-control" multiple="multiple" id="billItemId" name="billItemId"></select>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">商品二维码<span class="required">*</span></label>
+											<div class="col-md-9">
+												<input type="text" placeholder="商品二维码" class="form-control" value="${bill.itemBarCode }" id="itemBarCode" name="itemBarCode" readOnly="readOnly"/>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">申请数量<span class="required">*</span></label>
+											<div class="col-md-9">
+												<input type="text" placeholder="申请数量" class="form-control" value="${bill.billCount }" id="billCount" name="billCount" />
 											</div>
 										</div>
 									</div>
@@ -263,28 +268,74 @@
 										<div class="row">
 											<div class="col-md-12">
 												<div class="col-md-offset-3 col-md-9">
-													<button type="button" class="btn green" onclick="saveDepartment()">Submit</button>
+													<button type="submit" class="btn green">
+														<i class="fa fa-check"></i> Submit
+													</button>
 													<button type="button" class="btn default">Cancel</button>
 												</div>
 											</div>
 										</div>
 									</div>
-									<input type="hidden" id="departmentId" name="departmentId" value="${department.id }" />
-									<input type="hidden" id="departmentParentId" name="departmentParentId" value="${department.parentId }" />
-									<input type="hidden" id="parentIds" name="parentIds" value="${parentIds }" />
+									<input type="hidden" id="billId" name="billId" value="${bill.id }" />
+									<input type="hidden" id="operationCategory" name="operationCategory" value="${ocategory }" />
 									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
 								</form>
 								<!-- END FORM-->
 							</div>
 						</div>
 					</div>
-				</div>
+					
+					<div class="modal fade" id="ajax" role="basic" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="portlet blue box">
+											<div class="portlet-title">
+												<div class="caption">
+													<i class="fa fa-cogs"></i>产品类别
+												</div>
+											</div>
+											<div class="portlet-body">
+												<div id="using_json_1" class="tree-demo">
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn green" data-dismiss="modal">OK</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal fade" id="billDepartment" role="basic" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="portlet blue box">
+											<div class="portlet-title">
+												<div class="caption">
+													<i class="fa fa-cogs"></i>部门
+												</div>
+											</div>
+											<div class="portlet-body">
+												<div id="using_json_2" class="tree-demo">
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn green" data-dismiss="modal">OK</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				<!-- END PAGE CONTENT-->
 			</div>
-			<form action="" id="frmShowDepartment" method="POST">
-				<input type="hidden" id="departmentId" name="departmentId" />
-			</form>
 		</div>
 		<!-- END CONTENT -->
 	</div>
@@ -302,7 +353,7 @@
 	<!-- BEGIN CORE PLUGINS -->
 	<script src="<%=basePath%>assets/metronic/plugins/jquery-1.10.2.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-	<script src="<%=basePath%>assets/metronic/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+	<%-- <script src="<%=basePath%>assets/metronic/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script> --%>
 	<script src="<%=basePath%>assets/metronic/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
@@ -310,34 +361,56 @@
 	<script src="<%=basePath%>assets/metronic/plugins/jquery.cokie.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
 	<!-- END CORE PLUGINS -->
-	<script src="<%=basePath%>assets/metronic/scripts/core/app.js"></script>
+	<!-- BEGIN VALIDATE -->
+	<script src="<%=basePath%>assets/metronic/plugins/jquery-validation/dist/jquery.validate.min.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/metronic/plugins/jquery-validation/dist/additional-methods.min.js" type="text/javascript"></script>
+	<!-- END VALIDATE -->
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
+	<!-- BEGIN SELECT2 -->
+	<script src="http://cdn.bootcss.com/select2/4.0.0/js/select2.min.js"></script>
+	<!-- END SELECT2 -->
+	<!-- BEGIN JSTREE -->
 	<script src="<%=basePath%>assets/jstree/dist/jstree.js"></script>
+	<!-- END JSTREE -->
+	<script src="<%=basePath%>assets/metronic/scripts/core/app.js"></script>
 	<script>
 		jQuery(document).ready(function() {
+			var $billItem, billItemsData;
 			// initiate layout and plugins
 			App.init();
 			
-			//initiate jstree
+			//initiate select2
+			$billItem=$("#billItemId");
+			
+			$.ajax({
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>billmanagement/getallitems.do",
+		        data: "{'categoryId':'"+document.getElementById("itemCategory.id").value()+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	billItemsData=result.data;
+		        }
+		    });
+			
+			$billItem.select2({
+				data:billItemsData
+			});
+			
+			//initiate tree
 			$(function () {
 				$('#using_json_1').jstree({ 
 					'core' : {
 						"multiple" : false,
 					    'data' : {
 							contentType: "application/json; charset=utf-8",
-					        url: "<%=basePath%>departmentmanagement/inittreedata.do",
+					        url: "<%=basePath%>categorymanagement/inittreedata.do",
 					        dataType: 'json'
 					    }
 					},
-					"checkbox" : {
-						"keep_selected_style" : true,
-						"three_state":false,
-						"whole_node":false,
-						"tie_selection":false,
-						"cascade":"down+undetermined"
-				    },
 					"types" : {
 		                "default" : {
 		                    "icon" : "fa fa-folder icon-warning icon-lg"
@@ -346,165 +419,150 @@
 		                    "icon" : "fa fa-file icon-warning icon-lg"
 		                }
 		            },
-		            "plugins": ["types","checkbox"]
+		            "plugins": ["types"]
+				});
+			});
+			
+			$(function () {
+				$('#using_json_2').jstree({ 
+					'core' : {
+						"multiple" : false,
+					    'data' : {
+							contentType: "application/json; charset=utf-8",
+					        url: "<%=basePath%>departmentmanagement/inittreedata.do",
+					        dataType: 'json'
+					    }
+					},
+					"types" : {
+		                "default" : {
+		                    "icon" : "fa fa-folder icon-warning icon-lg"
+		                },
+		                "file" : {
+		                    "icon" : "fa fa-file icon-warning icon-lg"
+		                }
+		            },
+		            "plugins": ["types"]
 				});
 			});
 			
 			//add event listener
-			$('#using_json_1').on("changed.jstree", function (e, data) {
-			  	/* alert(data.selected);
-				var i, j, r = [];
-			    for(i = 0, j = data.selected.length; i < j; i++) {
-			      r.push(data.instance.get_node(data.selected[i]).text);
-			    }
-			    alert(r); */
-			    $("#parentName").val($('#using_json_1').jstree(true).get_node(data.instance.get_parent(data.selected)).text);
-			    $("#departmentName").val(data.instance.get_node(data.selected).text);
-			    $("#departmentId").val(data.selected);
-			    $("#departmentParentId").val(data.instance.get_parent(data.selected));
+			$billItem.on("select2:select", function (e) { changeItemInfo($billItem.val()); });
+			$billItem.on("select2:unselect", function (e) { changeItemInfo($billItem.val());});
+			
+			$('#using_json_1').on("select_node.jstree", function (e, data) {
+				$("#categoryName").val(data.instance.get_node(data.selected).text);
+				document.getElementById("itemCategory.id").value=data.selected;
+				changeItemSelection(data.selected);
 			});
+			$('#using_json_2').on("select_node.jstree", function (e, data) {
+				$("#departmentName").val(data.instance.get_node(data.selected).text);
+				document.getElementById("billDepartment.id").value=data.selected;
+			});
+			
+			handleValidation();
+			
+			var result="${result}";
+			try{
+				if (result){
+					showMessage(result);
+				}
+			}catch(error){
+			}
 		});
 		
-		//refresh tree
-		function refreshTree(node){
-			if (node){
-				$('#using_json_1').jstree(true).load_node(node);
-			}else{
-				$('#using_json_1').jstree(true).refresh();
-			}
-		}
-		
-		//get tree instance
-		function getInstanceOfTree(tree){
-			var treeInstance;
-			if (tree){
-				treeInstance=$('#'+tree).jstree(true);
-			}else{
-				treeInstance=$('#using_json_1').jstree(true);
-			}
-			return treeInstance;
-		}
-		
-		//create department button action
-		function createDepartment(){
-			$("#departmentName").attr('readonly', false);
+		function handleValidation() {
+			var frmItems = $('#frmBill'), checkError = $('.alert-danger', frmItems), checkSuccess = $('.alert-success', frmItems);
 			
-			var ref=getInstanceOfTree(),selection=ref.get_selected();
-			
-			$("#parentName").val(ref.get_node(selection).text);
-		    $("#departmentName").val("");
-		    $("#departmentId").val(null);
-		    $("#departmentParentId").val(selection);
-		}
-
-		//modify department button action
-		function modifyDepartment() {
-			var ref=getInstanceOfTree();
-			if (!ref.get_selected()){
-				showMessage("Hitting text to select option that you want to modify.");
-				return;
-			}
-			$("#departmentName").attr('readonly', false);
-		}
-		
-		//delete department button action
-		function deleteDepartment() {
-			var ref=getInstanceOfTree();
-			if(!ref.get_checked()){
-				showMessage("check option you want to delete.");
-				return;
-			}
-			bootbox.confirm("<font size='3'>You checked option(s) will be deleted and all included subclass were deleted at the same time.</font>", function (result){
-				if (result==true){
-					$.ajax({
-						type : "POST",
-						async : false,
-						contentType : "application/json; charset=utf-8",
-						url : "<%=basePath%>departmentmanagement/deletedepartment.do",
-				        data: "{'departmentIds':'"+ref.get_checked()+"'}",
-				        dataType: 'json',
-				        success: function(result) {
-				        	if (result.status==1){
-				        		cleanAllFields();
-				   			 	refreshTree();
-				        	}
-				        	showMessage(result.data);
-				        }
-				    });
+			frmItems.validate({
+				errorElement: 'span', //default input error message container
+				errorClass: 'help-block', // default input error message class
+				focusInvalid: false, // do not focus the last invalid input
+				ignore: "",
+				rules: {
+					categoryName: {
+						required: true
+					},
+					billItemId: {
+						required: true
+					},
+					itemBarCode: {
+						maxlength: 128,
+						required: true
+					},
+					billCount: {
+						maxlength: 6,
+						number: true,
+						required: true
+					},
+					departmentName:{
+						required: true
+					}
+				},
+				
+				invalidHandler: function (event, validator) { //display error alert on form submit
+					checkSuccess.hide();
+					checkError.show();
+				},
+				
+				highlight: function (element) { // hightlight error inputs
+					$(element).closest('.form-group').addClass('has-error'); // set error class to the control group
+				},
+				
+				unhighlight: function (element) { // revert the change done by hightlight
+					$(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
+				},
+				success: function (label) {
+					label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+				},
+				
+				submitHandler: function (form) {
+					checkSuccess.show();
+					checkError.hide();
+					form.submit();
 				}
 			});
 		}
 		
-		function cleanAllFields(){
-			$("#parentName").val("");
-		    $("#departmentName").val("");
-		    $("#departmentId").val(null);
-		    $("#departmentParentId").val(null);
-		}
-
-		//check field and do save action
-		function saveDepartment() {
-			var flag = true, id, parentid, departmentName;
-
-			if (!$("#departmentName").val()) {
-				constractAlertMessage("Input department NAME please!");
-				flag = false;
-			}
-
-			if (!flag) {
-				showMessage();
-				return;
-			}
-
-			saveDepartmentInfo();
-		}
-		
-		//save department information
-		function saveDepartmentInfo(){
-			var id, parentid, departmentName;
-			
-			id = $("#departmentId").val();
-			parentId = $("#departmentParentId").val();
-			departmentName = $("#departmentName").val();
-
+		function changeItemInfo(itemId){
+			var item;
 			$.ajax({
-				type : "POST",
-				async : false,
-				contentType : "application/json; charset=utf-8",
-				url : "<%=basePath%>departmentmanagement/savedepartment.do",
-		        data: "{'departmentId':'"+id+"' , 'parentId':'"+parentId+"' , 'departmentName':'"+departmentName+"'}",
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>billmanagement/finditem.do",
+		        data: "{'itemId':'"+itemId+"'}",
 		        dataType: 'json',
 		        success: function(result) {
-		        	if (result.status==1){
-		   			 	$("#departmentName").attr('readonly',true);
-		   			 	refreshTree();
-		   			 	openTreeNode();
-		        	}
-		        	showMessage(result.data);
+		        	item=result.data;
+		        	document.getElementById("itemCategory.id").value=item.categoryId;
+		        	$("#cateogoryName").val(item.categoryName);
+		        	$("#itemBarCode").val(item.itemBarCode);
 		        }
 		    });
 		}
 		
-		function openTreeNode(node){
-			var ref=getInstanceOfTree();
-			if (node){
-				operationNode=node;
-			}else{
-				operationNode=ref.get_selected();
-			}
-			if (!ref.is_open(operationNode)){
-				ref.open_node(operationNode,false,0);
-			}
-		}
-		
-		//construct message for display
-		var message;
-		function constructAlertMessage(msg){
-			if (!message){
-				message=msg;
-			}else{
-				message+="<br/>"+msg;
-			}
+		function changeItemSelection(categoryId){
+			var data;
+			
+			$("#div_billitem_select").remove();
+			$("#div_billitem_parent").append('<div class="col-md-9" id="div_billitem_select"><select class="js-states form-control" multiple="multiple" id="billItemId" name="billItemId"></select></div>');
+			
+			$.ajax({
+		        type: "POST",
+		        async:false,
+		        contentType: "application/json; charset=utf-8",
+		        url: "<%=basePath%>billmanagement/getallitem.do",
+		        data: "{'categoryId':'"+document.getElementById("itemCategory.id").value()+"'}",
+		        dataType: 'json',
+		        success: function(result) {
+		        	data=result.data;
+		        }
+		    });
+			
+			$("#billItemId").select2({
+				data:data
+			});
+			
 		}
 		
 		function showMessage(msg){
