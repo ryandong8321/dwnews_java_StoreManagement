@@ -134,7 +134,7 @@
 					</li>
 					<li class="start active ">
 						<a href="javascript:;"> 
-							<i class="a fa-folder-open"></i>
+							<i class="fa fa-folder-open"></i>
 							<span class="title"> 出 / 入库管理 </span> 
 							<span class="arrow open"></span>
 						</a>
@@ -143,7 +143,7 @@
 								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=1">
 									<i class="fa fa-cogs"></i> 出库管理 
 									<c:choose>
-										<c:when test="{ocategory==1}">
+										<c:when test="${ocategory=='1'}">
 											<span class="selected"></span>
 										</c:when>
 									</c:choose>
@@ -154,7 +154,7 @@
 								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=2">
 									<i class="fa fa-globe"></i> 入库管理
 									<c:choose>
-										<c:when test="{ocategory==2}">
+										<c:when test="${ocategory=='2'}">
 											<span class="selected"></span>
 										</c:when>
 									</c:choose>

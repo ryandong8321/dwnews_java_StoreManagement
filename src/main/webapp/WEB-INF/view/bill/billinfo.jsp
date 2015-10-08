@@ -116,12 +116,11 @@
 							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="start active ">
+					<li class="">
 						<a href="<%=basePath%>itemmanagement/itemslist.do"> 
 							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 商品管理 </span> 
-							<span class="selected"></span>
-							<span class="arrow open"></span>
+							<span class="arrow "></span>
 						</a>
 					</li>
 					<li class="">
@@ -131,39 +130,33 @@
 							<span class="arrow "></span>
 						</a>
 					</li>
-					<li class="">
+					<li class="start active ">
 						<a href="javascript:;"> 
-							<i class="a fa-folder-open"></i>
+							<i class="fa fa-folder-open"></i>
 							<span class="title"> 出 / 入库管理 </span> 
-							<span class="arrow "></span>
+							<span class="arrow open"></span>
 						</a>
 						<ul class="sub-menu">
 							<li>
 								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=1">
 									<i class="fa fa-cogs"></i> 出库管理 
 									<c:choose>
-										<c:when test="{ocategory==1}">
+										<c:when test="${ocategory=='1'}">
 											<span class="selected"></span>
-											<span class="arrow open"></span>
 										</c:when>
-										<c:otherwise>
-											<span class="arrow "></span>
-										</c:otherwise>
 									</c:choose>
+									<span class="arrow "></span>
 								</a>
 							</li>
 							<li>
 								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=2">
 									<i class="fa fa-globe"></i> 入库管理
 									<c:choose>
-										<c:when test="{ocategory==2}">
+										<c:when test="${ocategory=='2'}">
 											<span class="selected"></span>
-											<span class="arrow open"></span>
 										</c:when>
-										<c:otherwise>
-											<span class="arrow "></span>
-										</c:otherwise>
 									</c:choose>
+									<span class="arrow "></span>
 								</a>
 							</li>
 						</ul>
@@ -386,7 +379,7 @@
 			
 			$.ajax({
 		        type: "POST",
-		        async:false,
+		        async:true,
 		        contentType: "application/json; charset=utf-8",
 		        url: "<%=basePath%>billmanagement/getallitems.do",
 		        data: "{'categoryId':'"+document.getElementById("itemCategory.id").value()+"'}",

@@ -450,9 +450,7 @@
 				document.getElementById("category.id").value=data.selected;
 			});
 			
-			alert("1111");
 			handleValidation();
-			alert("2222");
 			
 			var result="${result}";
 			try{

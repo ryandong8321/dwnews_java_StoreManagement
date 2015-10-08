@@ -1,5 +1,6 @@
 package com.dwnews.storemanagement.service.item;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dwnews.storemanagement.entity.Items;
@@ -10,5 +11,7 @@ public interface IItemManagementService extends IStoreManagementBaseService<Item
 	public Map<String,Object> findItems(Integer rowNum, Integer pageSize, Map<String, Object> parameters, Map<String, String> sort);
 	
 	public boolean deleteItems(String itemIds);
+	
+	public List<Map<String,Object>> findAllItems(Integer selectedItemId);
 
 }

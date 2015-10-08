@@ -2,10 +2,14 @@ package com.dwnews.storemanagement.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.dwnews.storemanagement.entity.Categories;
+import com.dwnews.storemanagement.entity.Items;
 import com.dwnews.storemanagement.entity.ItemsInputOutput;
 import com.dwnews.storemanagement.service.bill.IStoreBillManagementService;
 import com.dwnews.storemanagement.service.category.ICategoryManagementService;
@@ -125,6 +132,63 @@ public class BillManagementController {
 		request.setAttribute("bill", bill);
 		logger.info("this is [showBillInfo.do] end ...");
 		return "bill/billinfo";
+	}
+	
+	@RequestMapping(value = "/getallitems.do",method=RequestMethod.POST)
+	@ResponseBody
+	public String getAllItems(HttpServletRequest request,@RequestBody String data) {
+		logger.info("this is [getAllItems.do] start ...");
+		if (data!=null&&!data.equals("")){
+			try {
+				logger.info("this is [getAllItems.do] is decoding ...");
+				data=URLDecoder.decode(data, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				logger.info("this is [getAllItems.do] occur error when program decoding ...");
+				e.printStackTrace();
+			}
+		}
+		
+		JSONObject json=JSONObject.fromString(data);
+		String categoryId=json.getString("categoryId")==null||json.getString("categoryId").equals("")||json.getString("categoryId").equals("null")
+				?"-1":json.getString("categoryId");
+		String itemId=json.getString("itemId")==null||json.getString("itemId").equals("")||json.getString("itemId").equals("null")
+				?"-1":json.getString("itemId");
+		logger.info("this is [getAllItems.do] show categoryId ["+categoryId+"]");
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		try{
+			logger.info("this is [getAllItems.do] is finding Items...");
+			List<Map<String,Object>> allItems=null;
+			if (categoryId.equals("-1")){
+				allItems=itemManagementService.findAllItems((itemId!=null&&!itemId.equals("")&&!itemId.equals("-1"))?null:Integer.parseInt(itemId));
+			}else{
+				Categories category=categoryManagementService.get(Integer.parseInt(categoryId));
+				allItems=new ArrayList<Map<String,Object>>();
+				Map<String,Object> map=null;
+				for (Items item:category.getItems()){
+					map=new HashMap<String, Object>();
+					map.put("id", item.getId());
+					map.put("text", item.getItemName());
+					if (itemId!=null&&!itemId.equals("")&&!itemId.equals("-1")){
+						if (item.getId().equals(Integer.parseInt(itemId))){
+							map.put("selected", "selected");
+						}
+					}
+					allItems.add(map);
+				}
+			}
+			parameters.put("status", 1);
+			parameters.put("data", allItems);
+		}catch(Exception ex){
+			logger.info("this is [getAllItems.do] find Items error ...");
+			ex.printStackTrace();
+			parameters.put("status", 0);
+			parameters.put("data", "");
+		}
+		String result=JSONObject.fromMap(parameters).toString();
+		logger.info("this is [getAllItems.do] result ["+result+"] ...");
+		logger.info("this is [getAllItems.do] end ...");
+		return result;
 	}
 	
 	@RequestMapping(value = "/savebill.do", method=RequestMethod.POST)

@@ -112,4 +112,25 @@ public class ItemManagementServiceImpl extends StoreManagementBaseServiceImpl<It
 		return flag;
 	}
 
+	@Override
+	public List<Map<String,Object>> findAllItems(Integer selectedItemId) {
+		List<Items> lst=this.getCurrentDAO().find("From Items its", new Object[0]);
+		
+		List<Map<String,Object>> result=null;
+		if(lst!=null&&!lst.isEmpty()){
+			result=new ArrayList<Map<String,Object>>();
+			Map<String,Object> map=null;
+			for (Items item:lst){
+				map=new HashMap<String, Object>();
+				map.put("id", item.getId());
+				map.put("text", item.getItemName());
+				if (selectedItemId!=null&&item.getId().equals(selectedItemId)){
+					map.put("selected", "selected");
+				}
+				result.add(map);
+			}
+		}
+		return result;
+	}
+
 }
