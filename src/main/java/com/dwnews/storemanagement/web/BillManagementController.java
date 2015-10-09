@@ -61,43 +61,24 @@ public class BillManagementController {
 	public String initBillTable(HttpServletRequest request) {
 		logger.info("this is [initBillTable.do] start ...");
 		
-		int rowNum = ServletRequestUtils.getIntParameter(request, "offset", 0);
-		int showCount = ServletRequestUtils.getIntParameter(request, "limit", 0);
+		int rowNum = ServletRequestUtils.getIntParameter(request, "offset", 0), 
+			showCount = ServletRequestUtils.getIntParameter(request, "limit", 0), 
+			ocategory = ServletRequestUtils.getIntParameter(request, "ocategory", 0);
 		
 		String strSort=ServletRequestUtils.getStringParameter(request, "sort", null), 
-				strOrder=ServletRequestUtils.getStringParameter(request, "order", null), 
-				ocategory=ServletRequestUtils.getStringParameter(request, "ocategory", null), 
-				itemName=null, startDate=null, endDate=null, departmentId=null, operationCategory=null, verifyStatus=null;
+			strOrder=ServletRequestUtils.getStringParameter(request, "order", null), 
+			search=ServletRequestUtils.getStringParameter(request, "search", null);
 		
-//		String search=ServletRequestUtils.getStringParameter(request, "search", null);
-//		String filters=ServletRequestUtils.getStringParameter(request, "filters", null);
-		Map<String, Object> parameters=null;
-		if (ocategory!=null&&!ocategory.equals("")){
+		Map<String, Object> parameters=new HashMap<String, Object>();
+		parameters.put("operationCategory", ocategory);
+		
+		if (search!=null&&!search.equals("")){
 			parameters=new HashMap<String, Object>();
-			parameters.put("operationCategory", ocategory);
+			parameters.put("billItem", search);
+			parameters.put("billDepartment", search);
+			parameters.put("itemBarCode", search);
+//			parameters.put("createTime", search);
 		}
-		
-		
-//		if (search!=null&&!search.equals("")){
-//			parameters=new HashMap<String, Object>();
-//			parameters.put("flag", " OR ");
-//			parameters.put("tag", " like ?");
-//			parameters.put("itemName", search);
-//			parameters.put("itemBarCode", search);
-//		}
-//		
-//		if (filters!=null&&!filters.equals("")){
-//			parameters=new HashMap<String, Object>();
-//			parameters.put("flag", " AND ");
-//			parameters.put("tag", " = ?");
-//			JSONObject json=JSONObject.fromObject(filters);
-//			Iterator<?> it=json.keys();
-//			String key=null;
-//			while(it.hasNext()){
-//				key=it.next().toString();
-//				parameters.put(key, json.get(key));
-//			}
-//		}
 		
 		Map<String, String> mapSort=null;
 		if (strSort!=null&&!strSort.equals("")&&strOrder!=null&&!strOrder.equals("")){
@@ -106,7 +87,7 @@ public class BillManagementController {
 			mapSort.put("order", strOrder);
 		}
 		
-		Map<String,Object> data=itemManagementService.findItems(rowNum,showCount,parameters,mapSort);
+		Map<String,Object> data=storeBillManagementService.findStoreBillInformation(rowNum,showCount,parameters,mapSort);
 		
 		String result=JSONObject.fromObject(data).toString();
 		logger.info("this is [initBillTable.do] data ["+result+"] ...");
@@ -115,21 +96,25 @@ public class BillManagementController {
 	}
 	
 	@RequestMapping(value = "/showbillinfo.do", method=RequestMethod.POST)
-	public String showBillInfo(HttpServletRequest request, String billId) {
+	public String showBillInfo(HttpServletRequest request, Integer billId, Integer ocategory) {
 		logger.info("this is [showBillInfo.do] start ...");
 		logger.info("this is [showBillInfo.do] billId ["+billId+"] ...");
+		logger.info("this is [showBillInfo.do] ocategory ["+ocategory+"] ...");
 		ItemsInputOutput bill=null;
 		try{
-			logger.info("this is [showBillInfo.do] find Bill ...");
-			bill=storeBillManagementService.get(Integer.parseInt(billId));
+			if (billId!=null&&billId!=-1){
+				logger.info("this is [showBillInfo.do] find Bill ...");
+				bill=storeBillManagementService.get(billId);
+			}
 		}catch(Exception ex){
-			logger.info("this is [showBillInfo.do] find Item failed...");
+			logger.info("this is [showBillInfo.do] find Bill failed...");
 			ex.printStackTrace();
 		}
 		
 		logger.info("this is [showBillInfo.do] data ["+bill+"] ...");
 		
 		request.setAttribute("bill", bill);
+		request.setAttribute("ocategory", ocategory);
 		logger.info("this is [showBillInfo.do] end ...");
 		return "bill/billinfo";
 	}
@@ -148,20 +133,34 @@ public class BillManagementController {
 			}
 		}
 		
-		JSONObject json=JSONObject.fromString(data);
-		String categoryId=json.getString("categoryId")==null||json.getString("categoryId").equals("")||json.getString("categoryId").equals("null")
-				?"-1":json.getString("categoryId");
-		String itemId=json.getString("itemId")==null||json.getString("itemId").equals("")||json.getString("itemId").equals("null")
-				?"-1":json.getString("itemId");
-		logger.info("this is [getAllItems.do] show categoryId ["+categoryId+"]");
+		String categoryId=null, billId=null;
+		try {
+			JSONObject json=JSONObject.fromString(data);
+			categoryId = json.getString("categoryId")==null||json.getString("categoryId").equals("")||json.getString("categoryId").equals("null")
+					?"-1":json.getString("categoryId");
+			billId = json.getString("billId")==null||json.getString("billId").equals("")||json.getString("billId").equals("null")
+					?"-1":json.getString("billId");
+			logger.info("this is [getAllItems.do] show categoryId ["+categoryId+"]");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		try{
 			logger.info("this is [getAllItems.do] is finding Items...");
 			List<Map<String,Object>> allItems=null;
-			if (categoryId.equals("-1")){
-				allItems=itemManagementService.findAllItems((itemId!=null&&!itemId.equals("")&&!itemId.equals("-1"))?null:Integer.parseInt(itemId));
-			}else{
+			
+			Integer itemId=null;
+			if (billId!=null&&!billId.equals("-1")){
+				ItemsInputOutput bill=storeBillManagementService.get(Integer.parseInt(billId));
+				if (bill!=null&&bill.getBillItem()!=null){
+					itemId=bill.getBillItem().getId();
+				}
+			}
+			
+			if (categoryId!=null&&categoryId.equals("-1")){
+				allItems=itemManagementService.findAllItems(itemId);
+			}else if (categoryId!=null){
 				Categories category=categoryManagementService.get(Integer.parseInt(categoryId));
 				allItems=new ArrayList<Map<String,Object>>();
 				Map<String,Object> map=null;
@@ -169,8 +168,8 @@ public class BillManagementController {
 					map=new HashMap<String, Object>();
 					map.put("id", item.getId());
 					map.put("text", item.getItemName());
-					if (itemId!=null&&!itemId.equals("")&&!itemId.equals("-1")){
-						if (item.getId().equals(Integer.parseInt(itemId))){
+					if (itemId!=null){
+						if (item.getId().equals(itemId)){
 							map.put("selected", "selected");
 						}
 					}
@@ -185,69 +184,87 @@ public class BillManagementController {
 			parameters.put("status", 0);
 			parameters.put("data", "");
 		}
-		String result=JSONObject.fromMap(parameters).toString();
+		String result=JSONObject.fromObject(parameters).toString();
 		logger.info("this is [getAllItems.do] result ["+result+"] ...");
 		logger.info("this is [getAllItems.do] end ...");
 		return result;
 	}
 	
+	@RequestMapping(value = "/finditem.do",method=RequestMethod.POST)
+	@ResponseBody
+	public String findItem(HttpServletRequest request,@RequestBody String data) {
+		logger.info("this is [findItem.do] start ...");
+		if (data!=null&&!data.equals("")){
+			try {
+				logger.info("this is [findItem.do] is decoding ...");
+				data=URLDecoder.decode(data, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				logger.info("this is [findItem.do] occur error when program decoding ...");
+				e.printStackTrace();
+			}
+		}
+		
+		String itemId=null;
+		try {
+			JSONObject json=JSONObject.fromString(data);
+			itemId = json.getString("itemId")==null||json.getString("itemId").equals("")||json.getString("itemId").equals("null")
+					?"-1":json.getString("itemId");
+			logger.info("this is [findItem.do] show itemId ["+itemId+"]");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		try{
+			logger.info("this is [findItem.do] is finding Items...");
+			Map<String, Object> map = new HashMap<String, Object>();
+			if (itemId!=null&&!itemId.equals("-1")){
+				Items item=itemManagementService.get(Integer.parseInt(itemId));
+				if (item!=null){
+					map.put("categoryId", item.getCategory()==null?null:item.getCategory().getId());
+					map.put("categoryName", item.getCategory()==null?null:item.getCategory().getCategoryName());
+					map.put("itemBarCode", item.getItemBarCode());
+				}
+			}
+			parameters.put("status", 1);
+			parameters.put("data", map);
+		}catch(Exception ex){
+			logger.info("this is [findItem.do] find Items error ...");
+			ex.printStackTrace();
+			parameters.put("status", 0);
+			parameters.put("data", "");
+		}
+		String result=JSONObject.fromObject(parameters).toString();
+		logger.info("this is [findItem.do] result ["+result+"] ...");
+		logger.info("this is [findItem.do] end ...");
+		return result;
+	}
+	
 	@RequestMapping(value = "/savebill.do", method=RequestMethod.POST)
-	public String saveBill(HttpServletRequest request, @ModelAttribute("bill") ItemsInputOutput bill, Integer billId, 
-			String categoryId, String departmentId) {
+	public String saveBill(HttpServletRequest request, @ModelAttribute("bill") ItemsInputOutput bill, Integer billId) {
 		logger.info("this is [saveBill.do] start ...");
 		
 		if (billId!=null&&billId!=0){
 			bill.setId(billId);
 		}
 		
-		logger.info("this is [saveBill.do] bill {"+bill+"} ...");
-		logger.info("this is [saveBill.do] categoryId {"+categoryId+"} ...");
-		logger.info("this is [saveBill.do] departmentId {"+departmentId+"} ...");
-		
 		Map<String, Object> result=new HashMap<String, Object>();
-		
-		if (categoryId!=null&&!categoryId.equals("")){
-			try{
-				bill.setItemCategory(categoryManagementService.get(Integer.parseInt(categoryId)));
-			}catch(Exception ex){
-				ex.printStackTrace();
-				logger.info("this is [saveBill.do] find category failed ...");
-				result.put("status", 0);
-				result.put("data", "save failed, try again!");
-			}
-		}
-		
-//		if (result.isEmpty()){
-//			if (bill.getCategory()!=null&&bill.getCategory().getId()!=null){
-//				try {
-//					bill.setCategory(categoryManagementService.get(bill.getCategory().getId()));
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					logger.info("this is [saveBill.do] find category failed ...");
-//					result.put("status", 0);
-//					result.put("data", "save failed, try again!");
-//				}
-//			}
-//		}
-		
-		if (result.isEmpty()){
-			try{
-				logger.info("this is [saveBill.do] is saving ...");
-				storeBillManagementService.save(bill);
-				logger.info("this is [saveBill.do] save bill done ...");
-				result.put("status", 1);
-				result.put("data", "save success!");
-			}catch(Exception ex){
-				logger.info("this is [saveBill.do] save bill error ...");
-				result.put("status", 0);
-				result.put("data", "save failed, try again!");
-				ex.printStackTrace();
-			}
+		try{
+			logger.info("this is [saveBill.do] is saving ...");
+			storeBillManagementService.save(bill);
+			logger.info("this is [saveBill.do] save bill done ...");
+			result.put("status", 1);
+			result.put("data", "save success!");
+		}catch(Exception ex){
+			logger.info("this is [saveBill.do] save bill error ...");
+			result.put("status", 0);
+			result.put("data", "save failed, try again!");
+			ex.printStackTrace();
 		}
 		logger.info("this is [saveBill.do] show result ["+result+"] ...");
 		request.setAttribute("result", result.get("data"));
-		request.setAttribute("item", bill);
-		return result.get("status").equals(1)?"forward:/billmanagement/billlist.do":"forward:/billmanagement/showbill.do";
+		request.setAttribute("bill", bill);
+		return result.get("status").equals(1)?"forward:/billmanagement/billlist.do?ocategory="+bill.getOperationCategory():"forward:/billmanagement/showbillinfo.do";
 	}
 	
 	@RequestMapping(value = "/deletebill.do",method=RequestMethod.POST)

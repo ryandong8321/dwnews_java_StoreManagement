@@ -82,7 +82,7 @@ public class ItemsInputOutput implements Serializable{
 	private String billMemo;
 	
 	/**
-	 * 订单审核状态
+	 * 订单审核状态(0:待审批, 1:审批通过, 2:审批不通过)
 	 */
 	@Column(name = "bill_verify", nullable = false)
 	private Integer billVerify;
@@ -165,5 +165,12 @@ public class ItemsInputOutput implements Serializable{
 
 	public void setBillVerify(Integer billVerify) {
 		this.billVerify = billVerify;
+	}
+
+	@Override
+	public String toString() {
+		return "ItemsInputOutput [id=" + id + ", operationCategory=" + operationCategory + ", itemBarCode="
+				+ itemBarCode + ", billCount=" + billCount + ", createTime=" + createTime + ", billVerify=" + billVerify
+				+ "]";
 	}
 }

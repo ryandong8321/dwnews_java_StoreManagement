@@ -239,7 +239,7 @@
 											</div>
 										</div>
 										<div class="form-group" id="div_billitem_parent">
-											<label class="control-label col-md-3">商品名称</label><span class="required">*</span>
+											<label class="control-label col-md-3">商品名称<span class="required">*</span></label>
 											<div class="col-md-9" id="div_billitem_select">
 												<select class="js-states form-control" multiple="multiple" id="billItemId" name="billItemId"></select>
 											</div>
@@ -270,6 +270,7 @@
 										</div>
 									</div>
 									<input type="hidden" id="billId" name="billId" value="${bill.id }" />
+									<input type="hidden" id="billItem.id" name="billItem.id" value="${bill.billItem.id }" />
 									<input type="hidden" id="operationCategory" name="operationCategory" value="${ocategory }" />
 									<input type="hidden" id="operation_status" name="operation_status" value="${operation_status }" />
 								</form>
@@ -379,10 +380,10 @@
 			
 			$.ajax({
 		        type: "POST",
-		        async:true,
+		        async:false,
 		        contentType: "application/json; charset=utf-8",
 		        url: "<%=basePath%>billmanagement/getallitems.do",
-		        data: "{'categoryId':'"+document.getElementById("itemCategory.id").value()+"'}",
+		        data: "{'categoryId':'"+document.getElementById('itemCategory.id').value+"','billId':'"+$("#billId").val()+"'}",
 		        dataType: 'json',
 		        success: function(result) {
 		        	billItemsData=result.data;
@@ -390,7 +391,8 @@
 		    });
 			
 			$billItem.select2({
-				data:billItemsData
+				data:billItemsData,
+				maximumSelectionLength:1
 			});
 			
 			//initiate tree
@@ -518,6 +520,9 @@
 		
 		function changeItemInfo(itemId){
 			var item;
+			
+			document.getElementById("billItem.id").value=itemId;
+			
 			$.ajax({
 		        type: "POST",
 		        async:false,
@@ -528,7 +533,7 @@
 		        success: function(result) {
 		        	item=result.data;
 		        	document.getElementById("itemCategory.id").value=item.categoryId;
-		        	$("#cateogoryName").val(item.categoryName);
+		        	$("#categoryName").val(item.categoryName);
 		        	$("#itemBarCode").val(item.itemBarCode);
 		        }
 		    });
@@ -544,8 +549,8 @@
 		        type: "POST",
 		        async:false,
 		        contentType: "application/json; charset=utf-8",
-		        url: "<%=basePath%>billmanagement/getallitem.do",
-		        data: "{'categoryId':'"+document.getElementById("itemCategory.id").value()+"'}",
+		        url: "<%=basePath%>billmanagement/getallitems.do",
+		        data: "{'categoryId':'"+document.getElementById('itemCategory.id').value+"','billId':'"+$("#billId").val()+"'}",
 		        dataType: 'json',
 		        success: function(result) {
 		        	data=result.data;

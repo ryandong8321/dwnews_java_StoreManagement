@@ -19,7 +19,7 @@ public class StoreBillManagementServiceImpl
 	extends StoreManagementBaseServiceImpl<ItemsInputOutput, Integer, IBillManagementDAO> 
 	implements IStoreBillManagementService {
 	
-	private final String _verify_wait="待审批", _verify_confirm="审批通过", _verify_pass="审批未通过";
+	private final String _verify_wait="待审批", _verify_confirm="审批通过", _verify_deny="审批未通过";
 	
 	@Autowired
 	private IBillManagementDAO billManagementDAO;
@@ -43,22 +43,23 @@ public class StoreBillManagementServiceImpl
 
 		if (parameters != null && !parameters.isEmpty()) {
 			hql.append(" where ");
-			
-			String flag=parameters.get("flag").toString();
-			String tag=parameters.get("tag").toString();
-			
-			param = new Object[parameters.size()-2];
+			param = new Object[parameters.size()];
 			int ind = 0;
+			
 			for (String key : parameters.keySet()) {
-				if (key.equals("flag")||key.equals("tag")){
-					continue;
-				}
 				if (ind!=0){
-					hql.append(flag);
+					hql.append(" or ");
 				}
-				hql.append(key);
-				hql.append(tag);
-				param[ind++] = flag.equals(" OR ")?"%"+parameters.get(key)+"%":parameters.get(key);
+				if (key.equals("billItem")){
+					hql.append("iio.billItem.itemName");
+				}else if (key.equals("billDepartment")){
+					hql.append("iio.billDepartment.departmentName");
+				}else{
+					hql.append(key);
+				}
+				
+				hql.append(key.equals("billItem")||key.equals("billDepartment")?" like ?":" = ?");
+				param[ind++] = key.equals("billItem")||key.equals("billDepartment")?"%"+parameters.get(key)+"%":parameters.get(key);
 			}
 		}
 		
@@ -69,19 +70,19 @@ public class StoreBillManagementServiceImpl
 			hql.append(sort.get("order"));
 		}
 		
-		page = this.getCurrentDAO().findPage(page, hql.toString(), param);
+		page= this.getCurrentDAO().findPage(page, hql.toString(), param);
 
 		if (page.getRows() != null && !page.getRows().isEmpty()) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			
-			map.put("id", -1);
-			map.put("billItemName", "<input type='text' id='itemName' name='itemName' />");
-			map.put("billDepartmentName", "<input type='text' id='departmentName' name='departmentName' />");
-			map.put("billItemBarCode", "<input type='text' id='itemBarCode' name='itemBarCode' />");
-			map.put("billCount", "<input type='text' id='billCount' name='billCount' />");
-			map.put("billOperationTime", "<input type='text' id='startDate' name='startDate' />");
-			map.put("billVerify", "<select id='verifyStatus' name='verifyStatus'><option value='-1'>请选择</option><option value='0'>待审批</option><option value='1'>审批通过</option><option value='2'>审批未通过</option></select>");
-			result.add(map);
+//			map.put("id", "");
+//			map.put("billItemName", "<input type='text' id='itemName' name='itemName' />");
+//			map.put("billDepartmentName", "<input type='text' id='departmentName' name='departmentName' />");
+//			map.put("billItemBarCode", "<input type='text' id='itemBarCode' name='itemBarCode' />");
+//			map.put("billCount", "<input type='text' id='billCount' name='billCount' />");
+//			map.put("billOperationTime", "<div class='input-group input-large date-picker input-daterange' data-date='2012-11-10' data-date-format='yyyy-dd-mm'><input type='text' class='form-control' id='startDate' name='from'><span class='input-group-addon'>to</span><input type='text' class='form-control' id='endDate' name='to'></div>");
+//			map.put("billVerify", "<select id='verifyStatus' name='verifyStatus'><option value='-1'>请选择</option><option value='0'>待审批</option><option value='1'>审批通过</option><option value='2'>审批未通过</option></select>");
+//			result.add(map);
 			
 			for (ItemsInputOutput iio : page.getRows()) {
 				map = new HashMap<String, Object>();
@@ -90,7 +91,7 @@ public class StoreBillManagementServiceImpl
 				map.put("billDepartmentName", iio.getBillDepartment().getDepartmentName());
 				map.put("billItemBarCode", iio.getBillItem().getItemBarCode());
 				map.put("billCount", iio.getBillCount());
-				map.put("billOperationTime", iio.getCreateTime());
+				map.put("billOperationTime", iio.getCreateTime().toString());
 				map.put("billVerify", getVerifyStatus(iio.getBillVerify()));
 				result.add(map);
 			}
@@ -111,10 +112,13 @@ public class StoreBillManagementServiceImpl
 		switch (billVerify){
 		case 0:
 			status=_verify_wait;
+			break;
 		case 1:
 			status=_verify_confirm;
+			break;
 		case 2:
-			status=_verify_pass;
+			status=_verify_deny;
+			break;
 		}
 		return status;
 	}

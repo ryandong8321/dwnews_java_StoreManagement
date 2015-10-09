@@ -27,6 +27,12 @@
 <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
 <link href="<%=basePath%>assets/jstree/dist/themes/default/style.min.css" rel="stylesheet" type="text/css"/>
 <!-- END PAGE LEVEL PLUGIN STYLES -->
+<!-- DATERANGEPICKER -->
+<link href="<%=basePath%>assets/metronic/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css"/>
+<link href="<%=basePath%>assets/metronic/plugins/bootstrap-datepicker/css/datepicker.css" rel="stylesheet" type="text/css"/>
+<link href="<%=basePath%>assets/metronic/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet" type="text/css"/>
+<link href="<%=basePath%>assets/metronic/plugins/bootstrap-datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css"/>
+<!-- DATERANGEPICKER -->
 <!-- BEGIN THEME STYLES -->
 <link href="<%=basePath%>assets/metronic/css/style-metronic.css" rel="stylesheet" type="text/css" />
 <link href="<%=basePath%>assets/metronic/css/style.css" rel="stylesheet" type="text/css" />
@@ -200,7 +206,7 @@
 									<li><a href="javascript:createBill()"> 提交申请 </a></li>
 									<li><a href="javascript:deleteBill()"> 删除申请 </a></li>
 									<li><a href="javascript:verifyConfirm()"> 审批通过 </a></li>
-									<li><a href="javascript:verifyPass()"> 审批不通过 </a></li>
+									<li><a href="javascript:verifyDeny()"> 审批不通过 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -225,7 +231,9 @@
 								data-toggle="table" 
 								data-side-pagination="server"
 								data-pagination="true" 
-								data-url="<%=basePath%>billmanagement/initbilltable.do?ocategory={ocategory}">
+								data-search="true" 
+								data-show-refresh="true"
+								data-url="<%=basePath%>billmanagement/initbilltable.do?ocategory=${ocategory}">
 								<thead>
 									<tr>
 										<th data-field="state" data-checkbox="true"></th>
@@ -244,7 +252,7 @@
 				</div>
 				<form action="<%=basePath%>billmanagement/showbillinfo.do" id="frmShowInfo" name="frmShowInfo" method="POST">
 					<input type="hidden" id="billId" name="billId" value=""/>
-					<input type="hidden" id="ocategory" name="ocategory" value="{ocategory}"/>
+					<input type="hidden" id="ocategory" name="ocategory" value="${ocategory}"/>
 				</form>
 				<!-- END PAGE CONTENT-->
 			</div>
@@ -273,7 +281,17 @@
 	<script src="<%=basePath%>assets/metronic/plugins/jquery.cokie.min.js" type="text/javascript"></script>
 	<script src="<%=basePath%>assets/metronic/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
 	<!-- END CORE PLUGINS -->
+	
+	<!-- BEGIN DATERANGEPICKER -->
+	<script src="<%=basePath%>assets/metronic/plugins/bootstrap-daterangepicker/daterangepicker.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/metronic/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/metronic/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/metronic/plugins/bootstrap-daterangepicker/moment.min.js" type="text/javascript"></script>
+	<script src="<%=basePath%>assets/metronic/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+	<!-- END DATERANGEPICKER -->
+	
 	<script src="<%=basePath%>assets/metronic/scripts/core/app.js"></script>
+	
 	<!-- BEGIN ALERT BOX -->
 	<script src="<%=basePath%>assets/metronic/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
 	<!-- END ALERT BOX -->
@@ -299,8 +317,17 @@
 				$("#billId").val(data.id);
 			});
 			
-			
 			$('#table').on("uncheck.bs.table", function (e, data) {
+			});
+			
+			$('#table').on("load-success.bs.table", function (e, data) {
+				if (jQuery().datepicker) {
+		            $('.date-picker').datepicker({
+		                rtl: App.isRTL(),
+		                autoclose: true
+		            });
+		            $('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+		        }
 			});
 			
 			var result="${result}";
