@@ -133,7 +133,7 @@
 					</li>
 					<li class="">
 						<a href="javascript:;"> 
-							<i class="a fa-folder-open"></i>
+							<i class="fa fa-bookmark-o"></i>
 							<span class="title"> 出 / 入库管理 </span> 
 							<span class="arrow "></span>
 						</a>
@@ -142,28 +142,22 @@
 								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=1">
 									<i class="fa fa-cogs"></i> 出库管理 
 									<c:choose>
-										<c:when test="{ocategory==1}">
+										<c:when test="${ocategory=='1'}">
 											<span class="selected"></span>
-											<span class="arrow open"></span>
 										</c:when>
-										<c:otherwise>
-											<span class="arrow "></span>
-										</c:otherwise>
 									</c:choose>
+									<span class="arrow "></span>
 								</a>
 							</li>
 							<li>
 								<a href="<%=basePath%>billmanagement/billlist.do?ocategory=2">
 									<i class="fa fa-globe"></i> 入库管理
 									<c:choose>
-										<c:when test="{ocategory==2}">
+										<c:when test="${ocategory=='2'}">
 											<span class="selected"></span>
-											<span class="arrow open"></span>
 										</c:when>
-										<c:otherwise>
-											<span class="arrow "></span>
-										</c:otherwise>
 									</c:choose>
+									<span class="arrow "></span>
 								</a>
 							</li>
 						</ul>
@@ -393,6 +387,7 @@
 			
 			$brands.select2({
 				data:brandsData
+				maximumSelectionLength:1
 			});
 			
 			$.ajax({
@@ -409,6 +404,7 @@
 			
 			$providers.select2({
 				data:providersData
+				maximumSelectionLength:1
 			});
 			
 			//initiate tree
@@ -536,6 +532,7 @@
 			
 			$("#providerIds").select2({
 				data:data
+				maximumSelectionLength:1
 			});			
 		}
 		

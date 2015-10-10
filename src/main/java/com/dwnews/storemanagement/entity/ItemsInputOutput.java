@@ -45,7 +45,7 @@ public class ItemsInputOutput implements Serializable{
 	private Items billItem;
 	
 	/**
-	 * 操作类别(1:入库操作, 2:出库操作)
+	 * 操作类别(1:出库操作, 2:入库操作)
 	 */
 	@Column(name = "bill_operation_category", nullable = false)
 	private Integer operationCategory;

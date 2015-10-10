@@ -103,8 +103,8 @@ public class StoreBillManagementServiceImpl
 	}
 
 	@Override
-	public boolean deleteBill(String billIds) {
-		return false;
+	public Map<String, Object> deleteBill(String billIds) {
+		return this.getCurrentDAO().deleteBill(billIds);
 	}
 	
 	private String getVerifyStatus(Integer billVerify){
@@ -121,5 +121,10 @@ public class StoreBillManagementServiceImpl
 			break;
 		}
 		return status;
+	}
+
+	@Override
+	public Map<String, Object> saveBillVerification(String billIds, String type) {
+		return this.getCurrentDAO().saveBillVerification(billIds, type);
 	}
 }

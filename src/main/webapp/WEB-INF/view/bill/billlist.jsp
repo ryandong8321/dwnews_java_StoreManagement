@@ -205,8 +205,8 @@
 								<ul class="dropdown-menu pull-right" role="menu">
 									<li><a href="javascript:createBill()"> 提交申请 </a></li>
 									<li><a href="javascript:deleteBill()"> 删除申请 </a></li>
-									<li><a href="javascript:verifyConfirm()"> 审批通过 </a></li>
-									<li><a href="javascript:verifyDeny()"> 审批不通过 </a></li>
+									<li><a href="javascript:verifyConfirm(1)"> 审批通过 </a></li>
+									<li><a href="javascript:verifyConfirm(2)"> 审批不通过 </a></li>
 								</ul>
 							</li>
 							<li>
@@ -215,8 +215,16 @@
 								<i class="fa fa-angle-right"></i>
 							</li>
 							<li>
-								<a href="#">出 / 入库管理</a>
-								<i class="fa fa-angle-right"></i>
+								<c:choose>
+									<c:when test="${ocategory=='1'}">
+										<a href="#">出库管理</a>
+										<i class="fa fa-angle-right"></i>
+									</c:when>
+									<c:when test="${ocategory=='2'}">
+										<a href="#">入库管理</a>
+										<i class="fa fa-angle-right"></i>
+									</c:when>
+								</c:choose>
 							</li>
 						</ul>
 						<!-- END PAGE TITLE & BREADCRUMB-->
@@ -373,6 +381,44 @@
 		
 		function showBillInfo(){
 			$("#frmShowInfo").submit();
+		}
+		
+		function verifyConfirm(type){
+			var ref=getInstanceOfTable(), selections=ref.bootstrapTable('getSelections'), msg;
+			var m=[];
+			
+			if(JSON.stringify(selections)=="[]"){
+				showMessage("Checking row(s) that you want to delete.");
+				return;
+			}
+			
+			msg="<font size='3'>You checked row(s) will be verified ";
+			if (type=="1"){
+				msg+="pass.</font>";
+			}else if (type=="2"){
+				msg+="deny.</font>";
+			}
+			
+			bootbox.confirm(msg, function (result){
+				if (result==true){
+					$(selections).each(function(){
+						m.push(this.id);
+					});
+					
+					$.ajax({
+						type : "POST",
+						async : false,
+						contentType : "application/json; charset=utf-8",
+						url : "<%=basePath%>billmanagement/verifybill.do",
+				        data: "{'billIds':'"+m.join()+"' , 'verifyType':'"+type+"'}",
+				        dataType: 'json',
+				        success: function(result) {
+				        	refreshTable();
+				        	showMessage(result.data);
+				        }
+				    });
+				}
+			});
 		}
 		
 		//delete bill button action

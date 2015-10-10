@@ -80,11 +80,13 @@ public class BillManagementController {
 //			parameters.put("createTime", search);
 		}
 		
-		Map<String, String> mapSort=null;
+		Map<String, String> mapSort=new HashMap<String, String>();
 		if (strSort!=null&&!strSort.equals("")&&strOrder!=null&&!strOrder.equals("")){
-			mapSort=new HashMap<String, String>();
 			mapSort.put("sort", strSort);
 			mapSort.put("order", strOrder);
+		}else{
+			mapSort.put("sort", "billVerify");
+			mapSort.put("order", "asc");
 		}
 		
 		Map<String,Object> data=storeBillManagementService.findStoreBillInformation(rowNum,showCount,parameters,mapSort);
@@ -109,6 +111,13 @@ public class BillManagementController {
 		}catch(Exception ex){
 			logger.info("this is [showBillInfo.do] find Bill failed...");
 			ex.printStackTrace();
+		}
+		
+		try {
+			bill=(ItemsInputOutput)request.getAttribute("bill");
+			ocategory=ServletRequestUtils.getIntParameter(request, "ocategory", -1);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		logger.info("this is [showBillInfo.do] data ["+bill+"] ...");
@@ -251,10 +260,11 @@ public class BillManagementController {
 		Map<String, Object> result=new HashMap<String, Object>();
 		try{
 			logger.info("this is [saveBill.do] is saving ...");
+//			result=storeBillManagementService.saveBill(bill);
 			storeBillManagementService.save(bill);
-			logger.info("this is [saveBill.do] save bill done ...");
 			result.put("status", 1);
-			result.put("data", "save success!");
+			result.put("data", "operation success!");
+			logger.info("this is [saveBill.do] save bill done ...");
 		}catch(Exception ex){
 			logger.info("this is [saveBill.do] save bill error ...");
 			result.put("status", 0);
@@ -263,8 +273,47 @@ public class BillManagementController {
 		}
 		logger.info("this is [saveBill.do] show result ["+result+"] ...");
 		request.setAttribute("result", result.get("data"));
+		request.setAttribute("ocategory", bill.getOperationCategory());
 		request.setAttribute("bill", bill);
 		return result.get("status").equals(1)?"forward:/billmanagement/billlist.do?ocategory="+bill.getOperationCategory():"forward:/billmanagement/showbillinfo.do";
+	}
+	
+	@RequestMapping(value = "/verifybill.do",method=RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> verifyBill(HttpServletRequest request,@RequestBody String data) {
+		logger.info("this is [verifyBill.do] start ...");
+		if (data!=null&&!data.equals("")){
+			try {
+				logger.info("this is [verifyBill.do] is decoding ...");
+				data=URLDecoder.decode(data, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				logger.info("this is [verifyBill.do] occur error when program decoding ...");
+				e.printStackTrace();
+			}
+		}
+		
+		JSONObject json=JSONObject.fromString(data);
+		String ids=json.getString("billIds")==null||json.getString("billIds").equals("")||json.getString("billIds").equals("null")
+				?"":json.getString("billIds"), 
+				verifyType=json.getString("verifyType")==null||json.getString("verifyType").equals("")||json.getString("verifyType").equals("null")
+						?"":json.getString("verifyType");
+		logger.info("this is [verifyBill.do] show billIds ["+ids+"]");
+		logger.info("this is [verifyBill.do] show verifyType ["+verifyType+"]");
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		try{
+			
+			logger.info("this is [verifyBill.do] is deleting ...");
+			parameters=storeBillManagementService.saveBillVerification(ids,verifyType);
+		}catch(Exception ex){
+			logger.info("this is [verifyBill.do] delete error ...");
+			ex.printStackTrace();
+			parameters.put("status", 0);
+			parameters.put("data", "operation failed, try again please.");
+		}
+		
+		logger.info("this is [verifyBill.do] end ...");
+		return parameters;
 	}
 	
 	@RequestMapping(value = "/deletebill.do",method=RequestMethod.POST)
@@ -290,9 +339,7 @@ public class BillManagementController {
 		try{
 			
 			logger.info("this is [deleteBill.do] is deleting ...");
-			storeBillManagementService.deleteBill(ids);
-			parameters.put("status", 1);
-			parameters.put("data", "operation success.");
+			parameters=storeBillManagementService.deleteBill(ids);
 		}catch(Exception ex){
 			logger.info("this is [deleteBill.do] delete error ...");
 			ex.printStackTrace();
