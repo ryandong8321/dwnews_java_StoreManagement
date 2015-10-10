@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.24, for osx10.8 (x86_64)
 --
--- Host: 127.0.0.1    Database: dwnews-store-management
+-- Host: 127.0.0.1    Database: dwnews_store_management
 -- ------------------------------------------------------
 -- Server version	5.6.26
 
@@ -16,19 +16,18 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `roles`
+-- Table structure for table `user_role_relationship`
 --
 
-DROP TABLE IF EXISTS `roles`;
+DROP TABLE IF EXISTS `user_role_relationship`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `roles` (
-  `role_id` int(11) NOT NULL AUTO_INCREMENT,
-  `role_name` varchar(32) COLLATE utf8_bin NOT NULL,
-  `role_description` varchar(128) COLLATE utf8_bin DEFAULT NULL,
-  `role_create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`role_id`),
-  UNIQUE KEY `role_id_UNIQUE` (`role_id`)
+CREATE TABLE `user_role_relationship` (
+  `relationship_id` int(11) NOT NULL AUTO_INCREMENT,
+  `relationship_user_id` int(11) NOT NULL,
+  `relationship_role_id` int(11) NOT NULL,
+  PRIMARY KEY (`relationship_id`),
+  UNIQUE KEY `relationship_id_UNIQUE` (`relationship_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -41,4 +40,4 @@ CREATE TABLE `roles` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-09-18 15:30:22
+-- Dump completed on 2015-10-10 17:53:28

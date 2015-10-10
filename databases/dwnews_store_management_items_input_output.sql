@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.24, for osx10.8 (x86_64)
 --
--- Host: 127.0.0.1    Database: dwnews-store-management
+-- Host: 127.0.0.1    Database: dwnews_store_management
 -- ------------------------------------------------------
 -- Server version	5.6.26
 
@@ -16,21 +16,26 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `users`
+-- Table structure for table `items_input_output`
 --
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `items_input_output`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(32) COLLATE utf8_bin NOT NULL,
-  `user_password` varchar(32) COLLATE utf8_bin NOT NULL,
-  `user_create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `user_ description` varchar(128) COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`user_id`),
-  UNIQUE KEY `user_id_UNIQUE` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+CREATE TABLE `items_input_output` (
+  `bill_id` int(11) NOT NULL AUTO_INCREMENT,
+  `bill_category_id` int(11) NOT NULL,
+  `bill_item_id` int(11) NOT NULL,
+  `bill_operation_category` int(11) NOT NULL COMMENT '1-input\n2-output\n3-return',
+  `bill_department_id` int(11) NOT NULL,
+  `bill_item_bar_code` varchar(128) COLLATE utf8_bin NOT NULL,
+  `bill_count` int(11) NOT NULL,
+  `bill_operation_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `bill_memo` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+  `bill_verify` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`bill_id`),
+  UNIQUE KEY `bill_id_UNIQUE` (`bill_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -42,4 +47,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-09-18 15:30:22
+-- Dump completed on 2015-10-10 17:53:27

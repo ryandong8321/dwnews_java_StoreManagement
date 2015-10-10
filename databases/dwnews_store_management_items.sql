@@ -1,7 +1,6 @@
-USE dwnews_store_management;
 -- MySQL dump 10.13  Distrib 5.6.24, for osx10.8 (x86_64)
 --
--- Host: 127.0.0.1    Database: dwnews-store-management
+-- Host: 127.0.0.1    Database: dwnews_store_management
 -- ------------------------------------------------------
 -- Server version	5.6.26
 
@@ -17,21 +16,30 @@ USE dwnews_store_management;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `categories`
+-- Table structure for table `items`
 --
 
-DROP TABLE IF EXISTS `categories`;
+DROP TABLE IF EXISTS `items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `categories` (
-  `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `category_name` varchar(32) COLLATE utf8_bin NOT NULL,
-  `category_parent_id` int(11) NOT NULL DEFAULT '-1',
-  `category_memo` varchar(128) COLLATE utf8_bin DEFAULT NULL,
-  `category_create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`category_id`),
-  UNIQUE KEY `id_UNIQUE` (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+CREATE TABLE `items` (
+  `item_id` int(10) NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(32) COLLATE utf8_bin NOT NULL,
+  `item_unit` varchar(4) COLLATE utf8_bin DEFAULT NULL,
+  `item_price` double NOT NULL,
+  `item_bar_code` varchar(128) COLLATE utf8_bin NOT NULL,
+  `item_store_count` int(11) NOT NULL DEFAULT '0',
+  `item_category_id` int(11) NOT NULL,
+  `item_photo` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+  `item_brand_id` int(11) DEFAULT NULL,
+  `item_standard` varchar(64) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`item_id`),
+  UNIQUE KEY `items_id_UNIQUE` (`item_id`),
+  KEY `itme_brand_relationship_idx` (`item_brand_id`),
+  KEY `item_category_relationship_idx` (`item_category_id`),
+  CONSTRAINT `item_brand_relationship` FOREIGN KEY (`item_brand_id`) REFERENCES `brand` (`brand_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `item_category_relationship` FOREIGN KEY (`item_category_id`) REFERENCES `categories` (`category_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -43,4 +51,4 @@ CREATE TABLE `categories` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-09-18 15:30:23
+-- Dump completed on 2015-10-10 17:53:27
